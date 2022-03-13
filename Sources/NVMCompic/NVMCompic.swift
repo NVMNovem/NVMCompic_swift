@@ -9,25 +9,25 @@ public struct NVMCompic {
     }
     
     public static func getCompicResults() async throws {
-        print("test COMPIC")
         let headers = ["content-type": "application/json"]
-        let body = ["url" : "2dehands.be"]
+        let body = ["url" : "2dehands.be",
+                    "icon_format" : "png",
+                    "background_width" : 100,
+                    "background_height" : 150,
+                    "background_format" : "png",
+                    "icon_width" : 200,
+                    "icon_height" : 200,
+                    "NVM_result" : true]
         
         var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
         request.httpMethod = "POST"
         request.allHTTPHeaderFields = headers
         request.httpBody = body.percentEncoded()
         
-            print("test COMPIC 1")
-        do {
-            let (data, response) = try await session.data(for: request)
-            print("test COMPIC 2")
-            print(data)
-            print(response)
-        } catch {
-            print("error COMPIC: \(error)")
-        }
+        let (data, response) = try await session.data(for: request)
         
+        print(data)
+        print(response)
     }
     
     public enum ImageType: String {
