@@ -69,9 +69,9 @@ public struct NVMCompic {
 }
 
 public struct Compic: Codable {
-    var icon: Data
-    var background: Data
-    var card: Data?
+    var iconImage: Data
+    var backgroundImage: Data
+    var cardImage: Data?
     
     var tintColor: String?
     var textColor: String?
