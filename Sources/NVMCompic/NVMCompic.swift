@@ -91,4 +91,26 @@ public struct CompicRequest: Codable {
     public var cardResizeType: NVMCompic.ResizeType?
     public var cardWidth: NVMCompic.ImageType?
     public var cardHeight: NVMCompic.ImageType?
+    
+    public init(url: String,
+                iconFormat: NVMCompic.ImageType? = nil, iconResizeType: NVMCompic.ResizeType? = nil, iconWidth: NVMCompic.ImageType? = nil, iconHeight: NVMCompic.ImageType? = nil,
+                backgroundFormat: NVMCompic.ImageType? = nil, backgroundResizeType: NVMCompic.ResizeType? = nil, backgroundWidth: NVMCompic.ImageType? = nil, backgroundHeight: NVMCompic.ImageType? = nil,
+                cardFormat: NVMCompic.ImageType? = nil, cardResizeType: NVMCompic.ResizeType? = nil, cardWidth: NVMCompic.ImageType? = nil, cardHeight: NVMCompic.ImageType? = nil) {
+        self.url = url
+        
+        self.iconFormat = iconFormat
+        self.iconResizeType = iconResizeType
+        self.iconWidth = iconWidth
+        self.iconHeight = iconHeight
+        
+        self.backgroundFormat = backgroundFormat
+        self.backgroundResizeType = backgroundResizeType
+        self.backgroundWidth = backgroundWidth
+        self.backgroundHeight = backgroundHeight
+        
+        self.cardFormat = cardFormat
+        self.cardResizeType = cardResizeType
+        self.cardWidth = cardWidth
+        self.cardHeight = cardHeight
+    }
 }
