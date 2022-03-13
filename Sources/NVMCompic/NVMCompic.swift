@@ -3,26 +3,19 @@ import Foundation
 public struct NVMCompic {
     static private let session = URLSession.shared
     static private let decoder = JSONDecoder()
+    static private let encoder = JSONEncoder()
 
     public init() {
     }
     
-    public static func getCompicResults() async throws -> Compic {
+    public static func getCompicResults(requests: [CompicRequest]) async throws -> Compic {
         let headers = ["content-type": "application/json"]
-        let body : [String : Any] = ["url" : "2dehands.be",
-                                     "icon_format" : "png",
-                                     "background_width" : 100,
-                                     "background_height" : 150,
-                                     "background_format" : "png",
-                                     "icon_width" : 200,
-                                     "icon_height" : 200,
-                                     "NVM_result" : true]
-        let finalBody = try JSONSerialization.data(withJSONObject: body)
+        let body = try encoder.encode(requests)
         
         var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
         request.httpMethod = "POST"
         request.allHTTPHeaderFields = headers
-        request.httpBody = finalBody
+        request.httpBody = body
         
         let (data, response) = try await session.data(for: request)
         
@@ -32,13 +25,13 @@ public struct NVMCompic {
         return try decoder.decode(Compic.self, from: data)
     }
     
-    public enum ImageType: String {
+    public enum ImageType: String, Codable {
         case png = "png"
         case jpeg = "jpeg"
         case tiff = "tiff"
     }
     
-    public enum ResizeMode: String {
+    public enum ResizeType: String, Codable {
         /**
          Preserving aspect ratio, ensure the image covers both provided dimensions by cropping/clipping to fit.
          
@@ -78,4 +71,24 @@ public struct Compic: Codable {
     var backgroundColor: String?
     var buttonColor: String?
     var fillColor: String?
+    var borderColor: String?
+}
+
+public struct CompicRequest: Codable {
+    var url: String
+     
+    var iconFormat: NVMCompic.ImageType?
+    var iconResizeType: NVMCompic.ResizeType?
+    var iconWidth: NVMCompic.ImageType?
+    var iconHeight: NVMCompic.ImageType?
+    
+    var backgroundFormat: NVMCompic.ImageType?
+    var backgroundResizeType: NVMCompic.ResizeType?
+    var backgroundWidth: NVMCompic.ImageType?
+    var backgroundHeight: NVMCompic.ImageType?
+    
+    var cardFormat: NVMCompic.ImageType?
+    var cardResizeType: NVMCompic.ResizeType?
+    var cardWidth: NVMCompic.ImageType?
+    var cardHeight: NVMCompic.ImageType?
 }
