@@ -10,12 +10,24 @@ public struct NVMCompic {
     
     public static func getCompicResults(requests: [CompicRequest]) async throws -> Compic {
         let headers = ["content-type": "application/json"]
-        let body = try encoder.encode(requests)
+        var body: [String : Any] = [:]
+        
+        for request in requests {
+            let requestData = try encoder.encode(request)
+            if var requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String: String] {
+                if let requestUrl = requestDict["url"] {
+                    requestDict.removeValue(forKey: "url")
+                    
+                    body[requestUrl] = requestDict
+                }
+            }
+        }
+        let finalBody = try JSONSerialization.data(withJSONObject: body)
         
         var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
         request.httpMethod = "POST"
         request.allHTTPHeaderFields = headers
-        request.httpBody = body
+        request.httpBody = finalBody
         
         let (data, response) = try await session.data(for: request)
         
@@ -79,23 +91,23 @@ public struct CompicRequest: Codable {
      
     public var iconFormat: NVMCompic.ImageType?
     public var iconResizeType: NVMCompic.ResizeType?
-    public var iconWidth: NVMCompic.ImageType?
-    public var iconHeight: NVMCompic.ImageType?
+    public var iconWidth: Int?
+    public var iconHeight: Int?
     
     public var backgroundFormat: NVMCompic.ImageType?
     public var backgroundResizeType: NVMCompic.ResizeType?
-    public var backgroundWidth: NVMCompic.ImageType?
-    public var backgroundHeight: NVMCompic.ImageType?
+    public var backgroundWidth: Int?
+    public var backgroundHeight: Int?
     
     public var cardFormat: NVMCompic.ImageType?
     public var cardResizeType: NVMCompic.ResizeType?
-    public var cardWidth: NVMCompic.ImageType?
-    public var cardHeight: NVMCompic.ImageType?
+    public var cardWidth: Int?
+    public var cardHeight: Int?
     
     public init(url: String,
-                iconFormat: NVMCompic.ImageType? = nil, iconResizeType: NVMCompic.ResizeType? = nil, iconWidth: NVMCompic.ImageType? = nil, iconHeight: NVMCompic.ImageType? = nil,
-                backgroundFormat: NVMCompic.ImageType? = nil, backgroundResizeType: NVMCompic.ResizeType? = nil, backgroundWidth: NVMCompic.ImageType? = nil, backgroundHeight: NVMCompic.ImageType? = nil,
-                cardFormat: NVMCompic.ImageType? = nil, cardResizeType: NVMCompic.ResizeType? = nil, cardWidth: NVMCompic.ImageType? = nil, cardHeight: NVMCompic.ImageType? = nil) {
+                iconFormat: NVMCompic.ImageType? = nil, iconResizeType: NVMCompic.ResizeType? = nil, iconWidth: Int? = nil, iconHeight: Int? = nil,
+                backgroundFormat: NVMCompic.ImageType? = nil, backgroundResizeType: NVMCompic.ResizeType? = nil, backgroundWidth: Int? = nil, backgroundHeight: Int? = nil,
+                cardFormat: NVMCompic.ImageType? = nil, cardResizeType: NVMCompic.ResizeType? = nil, cardWidth: Int? = nil, cardHeight: Int? = nil) {
         self.url = url
         
         self.iconFormat = iconFormat
