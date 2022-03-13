@@ -10,14 +10,14 @@ public struct NVMCompic {
     
     public static func getCompicResults() async throws {
         let headers = ["content-type": "application/json"]
-        let body = ["url" : "2dehands.be",
-                    "icon_format" : "png",
-                    "background_width" : 100,
-                    "background_height" : 150,
-                    "background_format" : "png",
-                    "icon_width" : 200,
-                    "icon_height" : 200,
-                    "NVM_result" : true]
+        let body : [String : Any] = ["url" : "2dehands.be",
+                                     "icon_format" : "png",
+                                     "background_width" : 100,
+                                     "background_height" : 150,
+                                     "background_format" : "png",
+                                     "icon_width" : 200,
+                                     "icon_height" : 200,
+                                     "NVM_result" : true]
         
         var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
         request.httpMethod = "POST"
