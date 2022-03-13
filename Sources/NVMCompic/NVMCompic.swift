@@ -18,11 +18,12 @@ public struct NVMCompic {
                                      "icon_width" : 200,
                                      "icon_height" : 200,
                                      "NVM_result" : true]
+        let finalBody = try JSONSerialization.data(withJSONObject: body)
         
         var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
         request.httpMethod = "POST"
         request.allHTTPHeaderFields = headers
-        request.httpBody = body.percentEncoded()
+        request.httpBody = finalBody
         
         let (data, response) = try await session.data(for: request)
         
