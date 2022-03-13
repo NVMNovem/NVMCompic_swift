@@ -62,33 +62,33 @@ public struct NVMCompic {
 }
 
 public struct Compic: Codable {
-    var iconImage: Data
-    var backgroundImage: Data
-    var cardImage: Data?
+    public var iconImage: Data
+    public var backgroundImage: Data
+    public var cardImage: Data?
     
-    var tintColor: String?
-    var textColor: String?
-    var backgroundColor: String?
-    var buttonColor: String?
-    var fillColor: String?
-    var borderColor: String?
+    public var tintColor: String?
+    public var textColor: String?
+    public var backgroundColor: String?
+    public var buttonColor: String?
+    public var fillColor: String?
+    public var borderColor: String?
 }
 
 public struct CompicRequest: Codable {
-    var url: String
+    public var url: String
      
-    var iconFormat: NVMCompic.ImageType?
-    var iconResizeType: NVMCompic.ResizeType?
-    var iconWidth: NVMCompic.ImageType?
-    var iconHeight: NVMCompic.ImageType?
+    public var iconFormat: NVMCompic.ImageType?
+    public var iconResizeType: NVMCompic.ResizeType?
+    public var iconWidth: NVMCompic.ImageType?
+    public var iconHeight: NVMCompic.ImageType?
     
-    var backgroundFormat: NVMCompic.ImageType?
-    var backgroundResizeType: NVMCompic.ResizeType?
-    var backgroundWidth: NVMCompic.ImageType?
-    var backgroundHeight: NVMCompic.ImageType?
+    public var backgroundFormat: NVMCompic.ImageType?
+    public var backgroundResizeType: NVMCompic.ResizeType?
+    public var backgroundWidth: NVMCompic.ImageType?
+    public var backgroundHeight: NVMCompic.ImageType?
     
-    var cardFormat: NVMCompic.ImageType?
-    var cardResizeType: NVMCompic.ResizeType?
-    var cardWidth: NVMCompic.ImageType?
-    var cardHeight: NVMCompic.ImageType?
+    public var cardFormat: NVMCompic.ImageType?
+    public var cardResizeType: NVMCompic.ResizeType?
+    public var cardWidth: NVMCompic.ImageType?
+    public var cardHeight: NVMCompic.ImageType?
 }
