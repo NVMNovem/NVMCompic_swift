@@ -26,7 +26,7 @@ public struct NVMCompic {
         
         let (data, response) = try await session.data(for: request)
         
-        print(data)
+        print(String(decoding: data, as: UTF8.self))
         print(response)
     }
     
