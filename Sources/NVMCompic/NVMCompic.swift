@@ -1,14 +1,13 @@
 import Foundation
 @available(iOS 15.0, macOS 12.0, *)
 public struct NVMCompic {
-    public private(set) var text = "Hello, World!"
-    
     static private let session = URLSession.shared
+    static private let decoder = JSONDecoder()
 
     public init() {
     }
     
-    public static func getCompicResults() async throws {
+    public static func getCompicResults() async throws -> Compic {
         let headers = ["content-type": "application/json"]
         let body : [String : Any] = ["url" : "2dehands.be",
                                      "icon_format" : "png",
@@ -29,6 +28,8 @@ public struct NVMCompic {
         
         print(String(decoding: data, as: UTF8.self))
         print(response)
+        
+        return try decoder.decode(Compic.self, from: data)
     }
     
     public enum ImageType: String {
@@ -67,25 +68,14 @@ public struct NVMCompic {
     }
 }
 
-extension Dictionary {
-    func percentEncoded() -> Data? {
-        return map { key, value in
-            let escapedKey = "\(key)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
-            let escapedValue = "\(value)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
-            return escapedKey + "=" + escapedValue
-        }
-        .joined(separator: "&")
-        .data(using: .utf8)
-    }
-}
-
-extension CharacterSet {
-    static let urlQueryValueAllowed: CharacterSet = {
-        let generalDelimitersToEncode = ":#[]@" // does not include "?" or "/" due to RFC 3986 - Section 3.4
-        let subDelimitersToEncode = "!$&'()*+,;="
-
-        var allowed = CharacterSet.urlQueryAllowed
-        allowed.remove(charactersIn: generalDelimitersToEncode + subDelimitersToEncode)
-        return allowed
-    }()
+public struct Compic: Codable {
+    var icon: Data
+    var background: Data
+    var card: Data?
+    
+    var tintColor: String?
+    var textColor: String?
+    var backgroundColor: String?
+    var buttonColor: String?
+    var fillColor: String?
 }
