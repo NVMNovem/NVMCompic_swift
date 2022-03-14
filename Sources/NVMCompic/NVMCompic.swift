@@ -24,7 +24,7 @@ public struct NVMCompic {
             }
         }
         let finalBody = try JSONSerialization.data(withJSONObject: body)
-        print("finalBody: \(finalBody)")
+        print("body: \(body)")
         var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
         request.httpMethod = "POST"
         request.allHTTPHeaderFields = headers
