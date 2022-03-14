@@ -1,5 +1,5 @@
 import Foundation
-@available(iOS 15.0, macOS 12.0, *)
+
 public struct NVMCompic {
     static private let session = URLSession.shared
     static private let decoder = JSONDecoder()
@@ -8,6 +8,7 @@ public struct NVMCompic {
     public init() {
     }
     
+    @available(iOS 15.0, macOS 12.0, *)
     public static func getCompicResults(requests: [CompicRequest]) async throws -> Compic {
         let headers = ["content-type": "application/json"]
         var body: [String : Any] = [:]
@@ -23,7 +24,7 @@ public struct NVMCompic {
             }
         }
         let finalBody = try JSONSerialization.data(withJSONObject: body)
-        
+        print("finalBody: \(finalBody)")
         var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
         request.httpMethod = "POST"
         request.allHTTPHeaderFields = headers
