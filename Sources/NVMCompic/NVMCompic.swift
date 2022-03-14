@@ -16,18 +16,14 @@ public struct NVMCompic {
         for request in requests {
             let requestData = try encoder.encode(request)
             if var requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String: Any] {
-                print("requestDict 1: \(requestDict)")
                 if let requestUrl = requestDict["url"] as? String {
-                    print("requestUrl : \(requestUrl)")
                     requestDict.removeValue(forKey: "url")
-                    print("requestDict 2: \(requestDict)")
                     
                     body[requestUrl] = requestDict
-                    print("body: \(body)")
                 }
             }
         }
-        print("body final: \(body)")
+        
         let finalBody = try JSONSerialization.data(withJSONObject: body)
         var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
         request.httpMethod = "POST"
