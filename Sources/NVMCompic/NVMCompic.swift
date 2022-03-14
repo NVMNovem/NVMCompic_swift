@@ -15,9 +15,9 @@ public struct NVMCompic {
         
         for request in requests {
             let requestData = try encoder.encode(request)
-            if var requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String: String] {
+            if var requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String: Any] {
                 print("requestDict 1: \(requestDict)")
-                if let requestUrl = requestDict["url"] {
+                if let requestUrl = requestDict["url"] as? String {
                     print("requestUrl : \(requestUrl)")
                     requestDict.removeValue(forKey: "url")
                     print("requestDict 2: \(requestDict)")
