@@ -203,15 +203,41 @@ extension String {
     }
 }
 
-public extension JSONDecoder.DateDecodingStrategy {
-    static let nvmCompicDateStrategyISO = custom {
-        let container = try $0.singleValueContainer()
-        let string = try container.decode(String.self)
-        print(string)
-        if let date = ISO8601DateFormatter().date(from: string) {
-            return date
-        } else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(string)")
+internal extension JSONDecoder.DateDecodingStrategy {
+    static let nvmDateStrategySince1970 = custom {
+        do {
+            let container = try $0.singleValueContainer()
+            do {
+                let secondsSince1970 = try container.decode(Int.self)
+                return date(from: secondsSince1970)
+            } catch {
+                throw error
+            }
+        } catch {
+            throw error
         }
+    }
+}
+
+internal extension JSONEncoder.DateEncodingStrategy {
+    static let nvmDateStrategySince1970 = custom {
+        var container = $1.singleValueContainer()
+        try container.encode($0.secondsSince1970)
+    }
+}
+
+internal extension Date {
+    var secondsSince1970: Int {
+        return Int((self.timeIntervalSince1970).rounded())
+    }
+}
+internal func date(from secondsSince1970: Int) -> Date {
+    return Date(timeIntervalSince1970: TimeInterval(secondsSince1970))
+}
+internal func date(from secondsSince1970: String) -> Date? {
+    if let secondsInt = Int(secondsSince1970) {
+        return Date(timeIntervalSince1970: TimeInterval(secondsInt))
+    } else {
+        return nil
     }
 }

@@ -95,7 +95,7 @@ public struct NVMCompic {
             print("DATA: \(String(decoding: data, as: UTF8.self))")
             print("RESPONSE: \(response)")
             
-            decoder.dateDecodingStrategy = .nvmCompicDateStrategyISO
+            decoder.dateDecodingStrategy = .nvmDateStrategySince1970
             return try decoder.decode([Compic].self, from: data)
         } else {
             throw NVMCompicError.invalidObject
