@@ -220,7 +220,7 @@ public extension JSONDecoder.DateDecodingStrategy {
                 if let dateISO = ISO8601DateFormatter().date(from: isoDate) {
                     return dateISO
                 } else {
-                    throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(String.self)")
+                    throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(isoDate)")
                 }
             } catch {
                 throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(String.self)")
