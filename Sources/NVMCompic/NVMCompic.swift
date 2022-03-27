@@ -94,8 +94,8 @@ public struct NVMCompic {
         
         let (data, response) = try await session.data(for: request)
         
-        print(String(decoding: data, as: UTF8.self))
-        print(response)
+        print("DATA: \(String(decoding: data, as: UTF8.self))")
+        print("RESPONSE: \(response)")
         
         return try decoder.decode([Compic].self, from: data)
     }
