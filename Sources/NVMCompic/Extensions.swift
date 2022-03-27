@@ -202,3 +202,31 @@ extension String {
         return count
     }
 }
+
+public extension JSONDecoder.DateDecodingStrategy {
+    static let nvmCompicDateStrategyISO = custom {
+        let container = try $0.singleValueContainer()
+        let string = try container.decode(String.self)
+        if let date = ISO8601DateFormatter().date(from: string) {
+            return date
+        }
+        throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(string)")
+    }
+    static let nvmCompicISODateStrategy = custom {
+        do {
+            let container = try $0.singleValueContainer()
+            do {
+                let isoDate = try container.decode(String.self)
+                if let dateISO = ISO8601DateFormatter().date(from: isoDate) {
+                    return dateISO
+                } else {
+                    throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(String.self)")
+                }
+            } catch {
+                throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(String.self)")
+            }
+        } catch {
+            throw error
+        }
+    }
+}

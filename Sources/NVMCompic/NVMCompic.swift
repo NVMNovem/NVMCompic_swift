@@ -81,7 +81,6 @@ public struct NVMCompic {
         }
         
         let requestData = try encoder.encode(body)
-        print("requestDict: \(try JSONSerialization.jsonObject(with: requestData, options: .allowFragments))")
         if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [[String : Any]] {
             let finalBody = try JSONSerialization.data(withJSONObject: requestDict)
             
@@ -96,6 +95,7 @@ public struct NVMCompic {
             print("DATA: \(String(decoding: data, as: UTF8.self))")
             print("RESPONSE: \(response)")
             
+            decoder.dateDecodingStrategy = .nvmCompicISODateStrategy
             return try decoder.decode([Compic].self, from: data)
         } else {
             throw NVMCompicError.invalidObject
