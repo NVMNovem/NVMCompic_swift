@@ -72,10 +72,14 @@ public struct NVMCompic {
     @available(iOS 15.0, macOS 12.0, *)
     public func fetchCompicResults(requests: [CompicRequest]) async throws -> [Compic] {
         let headers = ["content-type": "application/json"]
-        
-        let body = requests.map { request in
-            request.url.strippedUrl(keepPrefix: false, keepSuffix: true)
+        var body: [CompicRequest] = []
+        for var compicRequest in requests {
+            if let strippedUrl = compicRequest.url.strippedUrl(keepPrefix: false, keepSuffix: true) {
+                compicRequest.url = strippedUrl
+            }
+            body.append(compicRequest)
         }
+        
         let requestData = try encoder.encode(body)
         print("requestDict: \(try JSONSerialization.jsonObject(with: requestData, options: .allowFragments))")
         if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String : Any] {
