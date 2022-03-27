@@ -223,7 +223,7 @@ public extension JSONDecoder.DateDecodingStrategy {
                     throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(isoDate)")
                 }
             } catch {
-                throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(String.self)")
+                throw error
             }
         } catch {
             throw error
