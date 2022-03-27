@@ -241,10 +241,3 @@ internal func date(from secondsSince1970: String) -> Date? {
         return nil
     }
 }
-
-
-extension Compic: CustomStringConvertible {
-    public var description: String {
-        return "\(self)\r\r"
-    }
-}
