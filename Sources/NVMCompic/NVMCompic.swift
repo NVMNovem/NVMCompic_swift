@@ -77,7 +77,7 @@ public struct NVMCompic {
             request.url.strippedUrl(keepPrefix: false, keepSuffix: true)
         }
         let requestData = try encoder.encode(body)
-        if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String: [String : Any]] {
+        if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String : Any] {
             let finalBody = try JSONSerialization.data(withJSONObject: requestDict)
             
             var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
