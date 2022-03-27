@@ -9,6 +9,7 @@ import Foundation
 
 enum NVMCompicError: Error {
     case notInitialized
+    case invalidObject
 }
 
 extension NVMCompicError: LocalizedError {
@@ -16,6 +17,8 @@ extension NVMCompicError: LocalizedError {
         switch self {
         case .notInitialized:
             return 1001001
+        case .invalidObject:
+            return 1001002
         }
     }
     
@@ -24,6 +27,11 @@ extension NVMCompicError: LocalizedError {
         case .notInitialized:
             return NSLocalizedString(
                 "NVMCompic is not initialized.",
+                comment: ""
+            )
+        case .invalidObject:
+            return NSLocalizedString(
+                "Object is invalid.",
                 comment: ""
             )
         }

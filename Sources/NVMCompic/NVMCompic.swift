@@ -72,32 +72,28 @@ public struct NVMCompic {
     @available(iOS 15.0, macOS 12.0, *)
     public func fetchCompicResults(requests: [CompicRequest]) async throws -> [Compic] {
         let headers = ["content-type": "application/json"]
-        var body: [String : Any] = [:]
         
-        for request in requests {
-            let requestData = try encoder.encode(request)
-            if var requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String: Any] {
-                if let requestUrl = (requestDict["url"] as? String)?.strippedUrl(keepPrefix: false, keepSuffix: true) {
-                    requestDict.removeValue(forKey: "url")
-                    
-                    body[requestUrl] = requestDict
-                }
-            }
+        let body = requests.map { request in
+            request.url.strippedUrl(keepPrefix: false, keepSuffix: true)
         }
-        
-        let finalBody = try JSONSerialization.data(withJSONObject: body)
-        
-        var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
-        request.httpMethod = "POST"
-        request.allHTTPHeaderFields = headers
-        request.httpBody = finalBody
-        
-        let (data, response) = try await session.data(for: request)
-        
-        print("DATA: \(String(decoding: data, as: UTF8.self))")
-        print("RESPONSE: \(response)")
-        
-        return try decoder.decode([Compic].self, from: data)
+        let requestData = try encoder.encode(body)
+        if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String: [String : Any]] {
+            let finalBody = try JSONSerialization.data(withJSONObject: requestDict)
+            
+            var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
+            request.httpMethod = "POST"
+            request.allHTTPHeaderFields = headers
+            request.httpBody = finalBody
+            
+            let (data, response) = try await session.data(for: request)
+            
+            print("DATA: \(String(decoding: data, as: UTF8.self))")
+            print("RESPONSE: \(response)")
+            
+            return try decoder.decode([Compic].self, from: data)
+        } else {
+            throw NVMCompicError.invalidObject
+        }
     }
     
     @available(iOS 15.0, macOS 12.0, *)
