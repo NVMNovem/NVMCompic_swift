@@ -77,6 +77,7 @@ public struct NVMCompic {
             request.url.strippedUrl(keepPrefix: false, keepSuffix: true)
         }
         let requestData = try encoder.encode(body)
+        print("requestDict: \(try JSONSerialization.jsonObject(with: requestData, options: .allowFragments))")
         if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String : Any] {
             let finalBody = try JSONSerialization.data(withJSONObject: requestDict)
             
