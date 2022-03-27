@@ -89,11 +89,7 @@ public struct NVMCompic {
             request.allHTTPHeaderFields = headers
             request.httpBody = finalBody
             
-            let (data, response) = try await session.data(for: request)
-            
-            print("data: \(data)")
-            print("DATA: \(String(decoding: data, as: UTF8.self))")
-            print("RESPONSE: \(response)")
+            let (data, _) = try await session.data(for: request)
             
             decoder.dateDecodingStrategy = .nvmDateStrategySince1970
             return try decoder.decode([Compic].self, from: data)
