@@ -82,7 +82,7 @@ public struct NVMCompic {
         
         let requestData = try encoder.encode(body)
         print("requestDict: \(try JSONSerialization.jsonObject(with: requestData, options: .allowFragments))")
-        if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String : Any] {
+        if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [[String : Any]] {
             let finalBody = try JSONSerialization.data(withJSONObject: requestDict)
             
             var request = URLRequest(url: URL(string: "https://glacial-reaches-72317.herokuapp.com/api")!)
