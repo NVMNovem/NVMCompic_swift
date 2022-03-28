@@ -15,12 +15,25 @@ public struct NVMCompic {
     }
     
     public func checkForUpdates() async throws {
-        
     }
     
-    /*public func getCompic(request: CompicRequest) async throws -> Compic {
-        
-    }*/
+    public func getCompic(request: CompicRequest) async throws -> Compic? {
+        if let localCompic = try await getLocalCompic(request: request) {
+            return localCompic
+        } else {
+            if let fetchedCompic = try await fetchCompicResults(requests: [request]).first(where: { $0.compicRequest == request }) {
+                try await storeCompics([fetchedCompic])
+                return fetchedCompic
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    public func getLocalCompic(request: CompicRequest) async throws -> Compic? {
+        guard let localCompics = try await getLocalCompics([request]) else { return nil }
+        return localCompics.first { $0.compicRequest == request }
+    }
     
     public func checkImages() async throws {
         _ = try await self.checkImagesResult()
@@ -71,6 +84,7 @@ public struct NVMCompic {
     
     @available(iOS 15.0, macOS 12.0, *)
     public func fetchCompicResults(requests: [CompicRequest]) async throws -> [Compic] {
+        print("fetchCompicResults()")
         let headers = ["content-type": "application/json"]
         var body: [CompicRequest] = []
         for var compicRequest in requests {
@@ -117,8 +131,42 @@ public struct NVMCompic {
         return try decoder.decode([String : Date].self, from: data)
     }
     
+    private func getLocalCompics(_ requests: [CompicRequest]) async throws -> [Compic]? {
+        if let compicPath = compicPath {
+            decoder.dateDecodingStrategy = .nvmDateStrategySince1970
+            let contents = try fileManager.contentsOfDirectory(atPath: compicPath.path)
+            
+            var compics: [Compic] = []
+            for compicFilePath in contents {
+                if let compicFileURL = URL(string: compicFilePath) {
+                    let compicData = try Data(contentsOf: compicFileURL)
+                    
+                    let compic = try decoder.decode(Compic.self, from: compicData)
+                    compics.append(compic)
+                }
+            }
+            
+            if !compics.isEmpty {
+                return compics
+            } else {
+                return nil
+            }
+        } else {
+            throw NVMCompicError.notInitialized
+        }
+    }
+    
     private func storeCompics(_ compics: [Compic]) async throws {
-        
+        if let compicPath = compicPath {
+            encoder.dateEncodingStrategy = .nvmDateStrategySince1970
+            
+            for compic in compics {
+                let compicData = try encoder.encode(compic)
+                try compicData.write(to: compicPath.appendingPathComponent(compic.url))
+            }
+        } else {
+            throw NVMCompicError.notInitialized
+        }
     }
     
     public enum ImageType: String, Codable {
@@ -219,7 +267,7 @@ extension Compic: CustomStringConvertible {
 }
 
 
-public struct CompicRequest: Codable {
+public struct CompicRequest: Codable, Equatable {
     public var url: String
      
     public var iconFormat: NVMCompic.ImageType?
