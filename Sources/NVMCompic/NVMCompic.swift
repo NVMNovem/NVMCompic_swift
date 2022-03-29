@@ -12,6 +12,10 @@ public struct NVMCompic {
 
     mutating public func initialize(compicPath: URL) {
         self.compicPath = compicPath
+        
+        Task.init {
+            try await NVMCompic.sharedInstance.checkForUpdates()
+        }
     }
     
     public func checkForUpdates() async throws {
@@ -134,16 +138,13 @@ public struct NVMCompic {
     private func getLocalCompics(_ requests: [CompicRequest]) async throws -> [Compic]? {
         if let compicPath = compicPath {
             decoder.dateDecodingStrategy = .nvmDateStrategySince1970
-            let contents = try fileManager.contentsOfDirectory(atPath: compicPath.path)
             
             var compics: [Compic] = []
-            for compicFilePath in contents {
-                if let compicFileURL = URL(string: compicFilePath) {
-                    let compicData = try Data(contentsOf: compicFileURL)
-                    
-                    let compic = try decoder.decode(Compic.self, from: compicData)
-                    compics.append(compic)
-                }
+            for request in requests {
+                let compicData = try Data(contentsOf: compicPath.appendingPathComponent("\((request.url).replacingOccurrences(of: ".", with: "_")).compic"))
+                
+                let compic = try decoder.decode(Compic.self, from: compicData)
+                compics.append(compic)
             }
             
             if !compics.isEmpty {
