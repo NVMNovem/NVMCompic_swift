@@ -141,7 +141,7 @@ public struct NVMCompic {
             
             var compics: [Compic] = []
             for request in requests {
-                let compicURL = compicPath.appendingPathComponent("\(request.id).compic")
+                let compicURL = compicPath.appendingPathComponent("\(request.requestId).compic")
                 if fileManager.fileExists(atPath: compicPath.path) {
                     if let compicData = try? Data(contentsOf: compicURL) {
                         let compic = try decoder.decode(Compic.self, from: compicData)
@@ -167,7 +167,7 @@ public struct NVMCompic {
             
             for compic in compics {
                 let compicData = try encoder.encode(compic)
-                try compicData.write(to: compicPath.appendingPathComponent("\(compic.compicRequest.id).compic"))
+                try compicData.write(to: compicPath.appendingPathComponent("\(compic.compicRequest.requestId).compic"))
             }
         } else {
             throw NVMCompicError.notInitialized
@@ -272,7 +272,7 @@ extension Compic: CustomStringConvertible {
 }
 
 
-public struct CompicRequest: Codable, Equatable, Identifiable {
+public struct CompicRequest: Codable, Equatable {
     public var url: String
      
     public var iconFormat: NVMCompic.ImageType?
@@ -290,7 +290,7 @@ public struct CompicRequest: Codable, Equatable, Identifiable {
     public var cardWidth: Int?
     public var cardHeight: Int?
     
-    public var id: String { randomString(length: 15, letters: true, capitalLetters: true, numbers: true, symbols: false, characters: false) }
+    public var requestId: String
     
     public init(url: String,
                 
@@ -324,5 +324,7 @@ public struct CompicRequest: Codable, Equatable, Identifiable {
         self.cardResizeType = cardResizeType
         self.cardWidth = cardWidth
         self.cardHeight = cardHeight
+        
+        self.requestId = randomString(length: 15, letters: true, capitalLetters: true, numbers: true, symbols: false, characters: false)
     }
 }
