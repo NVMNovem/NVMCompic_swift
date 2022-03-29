@@ -162,7 +162,7 @@ public struct NVMCompic {
             
             for compic in compics {
                 let compicData = try encoder.encode(compic)
-                try compicData.write(to: compicPath.appendingPathComponent(compic.url))
+                try compicData.write(to: compicPath.appendingPathComponent("\((compic.url).replacingOccurrences(of: ".", with: "_")).compic"))
             }
         } else {
             throw NVMCompicError.notInitialized
