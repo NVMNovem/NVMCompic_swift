@@ -141,7 +141,7 @@ public struct NVMCompic {
             
             var compics: [Compic] = []
             for request in requests {
-                let compicURL = compicPath.appendingPathComponent("\(request.requestId).compic")
+                let compicURL = compicPath.appendingPathComponent(request.getFileName())
                 if fileManager.fileExists(atPath: compicPath.path) {
                     if let compicData = try? Data(contentsOf: compicURL) {
                         let compic = try decoder.decode(Compic.self, from: compicData)
@@ -167,7 +167,7 @@ public struct NVMCompic {
             
             for compic in compics {
                 let compicData = try encoder.encode(compic)
-                try compicData.write(to: compicPath.appendingPathComponent("\(compic.compicRequest.requestId).compic"))
+                try compicData.write(to: compicPath.appendingPathComponent(compic.compicRequest.getFileName()))
             }
         } else {
             throw NVMCompicError.notInitialized
@@ -290,8 +290,6 @@ public struct CompicRequest: Codable, Equatable {
     public var cardWidth: Int?
     public var cardHeight: Int?
     
-    public var requestId: String
-    
     public init(url: String,
                 
                 iconFormat: NVMCompic.ImageType? = nil,
@@ -324,7 +322,9 @@ public struct CompicRequest: Codable, Equatable {
         self.cardResizeType = cardResizeType
         self.cardWidth = cardWidth
         self.cardHeight = cardHeight
-        
-        self.requestId = randomString(length: 15, letters: true, capitalLetters: true, numbers: true, symbols: false, characters: false)
+    }
+    
+    internal func getFileName() -> String {
+        return self.url.toBase64() + ".compic"
     }
 }

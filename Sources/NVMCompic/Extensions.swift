@@ -273,3 +273,19 @@ internal func randomString(length: Int, letters: Bool, capitalLetters: Bool, num
     
     return String((0..<length).map{ _ in stringCharacters.randomElement()! })
 }
+
+extension String {
+
+    func fromBase64() -> String? {
+        guard let data = Data(base64Encoded: self) else {
+            return nil
+        }
+
+        return String(data: data, encoding: .utf8)
+    }
+
+    func toBase64() -> String {
+        return Data(self.utf8).base64EncodedString()
+    }
+
+}
