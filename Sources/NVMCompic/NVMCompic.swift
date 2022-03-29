@@ -325,6 +325,6 @@ public struct CompicRequest: Codable, Equatable {
     }
     
     internal func getFileName() -> String {
-        return self.url.toBase64() + ".compic"
+        return (self.url.toBase64().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])) + ".compic"
     }
 }
