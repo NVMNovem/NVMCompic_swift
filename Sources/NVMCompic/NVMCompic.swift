@@ -1,7 +1,7 @@
 import Foundation
 
 public struct NVMCompic {
-    public static let sharedInstance = NVMCompic()
+    public static var sharedInstance = NVMCompic()
     
     private let session = URLSession.shared
     private let decoder = JSONDecoder()
