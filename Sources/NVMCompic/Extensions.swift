@@ -241,3 +241,35 @@ internal func date(from secondsSince1970: String) -> Date? {
         return nil
     }
 }
+
+
+internal let NVMCompicLettersList = "abcdefghijklmnopqrstuvwxyz"
+internal let NVMCompicCapitalLettersList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+internal let NVMCompicNumbersList = "0123456789"
+internal let NVMCompicSymbolsList = "!#$%&()*+,-./:;<=>?@[]^_`{}"
+internal let NVMCompicCharactersList = "§çàæãåáäâāéëêèęėēúüûùūíïìîįīóöôòõœøō£Œ|∏Óı∫√¢⁄›Ω∑∆·ﬂÎÍËÆÅÊ‚™Ÿªï„”’å»ÛÁØ°¤¥©®ß˥˦˧˨˩ͶͷϴŸ|~"
+
+internal func randomString(length: Int, letters: Bool, capitalLetters: Bool, numbers: Bool, symbols: Bool, characters: Bool) -> String {
+    var stringCharacters = ""
+    
+    
+    if letters {
+        stringCharacters = stringCharacters + NVMCompicLettersList
+    }
+    if capitalLetters {
+        stringCharacters = stringCharacters + NVMCompicCapitalLettersList
+    }
+    if numbers {
+        stringCharacters = stringCharacters + NVMCompicNumbersList
+    }
+    if symbols {
+        stringCharacters = stringCharacters + NVMCompicSymbolsList
+    }
+    if characters {
+        stringCharacters = stringCharacters + NVMCompicCharactersList
+    }
+    
+    if stringCharacters == "" {stringCharacters = stringCharacters + NVMCompicNumbersList}
+    
+    return String((0..<length).map{ _ in stringCharacters.randomElement()! })
+}

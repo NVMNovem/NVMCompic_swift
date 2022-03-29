@@ -141,7 +141,7 @@ public struct NVMCompic {
             
             var compics: [Compic] = []
             for request in requests {
-                let compicData = try Data(contentsOf: compicPath.appendingPathComponent("\((request.url).replacingOccurrences(of: ".", with: "_")).compic"))
+                let compicData = try Data(contentsOf: compicPath.appendingPathComponent("\(request.id).compic"))
                 
                 let compic = try decoder.decode(Compic.self, from: compicData)
                 compics.append(compic)
@@ -163,7 +163,7 @@ public struct NVMCompic {
             
             for compic in compics {
                 let compicData = try encoder.encode(compic)
-                try compicData.write(to: compicPath.appendingPathComponent("\((compic.url).replacingOccurrences(of: ".", with: "_")).compic"))
+                try compicData.write(to: compicPath.appendingPathComponent("\(compic.compicRequest.id).compic"))
             }
         } else {
             throw NVMCompicError.notInitialized
@@ -268,7 +268,7 @@ extension Compic: CustomStringConvertible {
 }
 
 
-public struct CompicRequest: Codable, Equatable {
+public struct CompicRequest: Codable, Equatable, Identifiable {
     public var url: String
      
     public var iconFormat: NVMCompic.ImageType?
@@ -285,6 +285,8 @@ public struct CompicRequest: Codable, Equatable {
     public var cardResizeType: NVMCompic.ResizeType?
     public var cardWidth: Int?
     public var cardHeight: Int?
+    
+    public var id: String { randomString(length: 15, letters: true, capitalLetters: true, numbers: true, symbols: false, characters: false) }
     
     public init(url: String,
                 
