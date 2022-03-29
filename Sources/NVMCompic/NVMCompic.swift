@@ -290,6 +290,8 @@ public struct CompicRequest: Codable, Equatable {
     public var cardWidth: Int?
     public var cardHeight: Int?
     
+    public var nvmSecret: String?
+    
     public init(url: String,
                 
                 iconFormat: NVMCompic.ImageType? = nil,
@@ -325,6 +327,27 @@ public struct CompicRequest: Codable, Equatable {
     }
     
     internal func getFileName() -> String {
-        return (self.url.toBase64().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])) + ".compic"
+        return (self.getUniqueCompicString().prefix(200) + ".compic")
+    }
+    
+    private func getUniqueCompicString() -> String {
+        var uniqueString = self.url
+        
+        uniqueString += (self.iconFormat?.rawValue ?? "")
+        uniqueString += (self.iconResizeType?.rawValue ?? "")
+        uniqueString += String(self.iconWidth ?? 0)
+        uniqueString += String(self.iconHeight ?? 0)
+        
+        uniqueString += (self.backgroundFormat?.rawValue ?? "")
+        uniqueString += (self.backgroundResizeType?.rawValue ?? "")
+        uniqueString += String(self.backgroundWidth ?? 0)
+        uniqueString += String(self.backgroundHeight ?? 0)
+        
+        uniqueString += (self.cardFormat?.rawValue ?? "")
+        uniqueString += (self.cardResizeType?.rawValue ?? "")
+        uniqueString += String(self.cardWidth ?? 0)
+        uniqueString += String(self.cardHeight ?? 0)
+        
+        return uniqueString.toBase64().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
     }
 }
