@@ -143,10 +143,11 @@ public struct NVMCompic {
             for request in requests {
                 let compicURL = compicPath.appendingPathComponent("\(request.id).compic")
                 if fileManager.fileExists(atPath: compicPath.path) {
-                    let compicData = try Data(contentsOf: compicURL)
-                    let compic = try decoder.decode(Compic.self, from: compicData)
-                    
-                    compics.append(compic)
+                    if let compicData = try? Data(contentsOf: compicURL) {
+                        let compic = try decoder.decode(Compic.self, from: compicData)
+                        
+                        compics.append(compic)
+                    }
                 }
             }
             
