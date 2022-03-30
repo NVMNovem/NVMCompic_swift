@@ -25,7 +25,9 @@ public struct NVMCompic {
         if let localCompic = try await getLocalCompic(request: request) {
             return localCompic
         } else {
-            if let fetchedCompic = try await fetchCompicResults(requests: [request]).first(where: { $0.compicRequest == request }) {
+            if var fetchedCompic = try await fetchCompicResults(requests: [request]).first(where: { $0.compicRequest == request }) {
+                fetchedCompic.usedAt = Date()
+                
                 try await storeCompics([fetchedCompic])
                 return fetchedCompic
             } else {
@@ -238,6 +240,8 @@ public struct NVMCompic {
 public struct Compic: Codable {
     public var objectId: String
     public var updatedAt: Date
+    
+    public var storedAt: Date
     public var usedAt: Date?
     
     public var compicRequest: CompicRequest
@@ -265,6 +269,34 @@ public struct Compic: Codable {
      - warning: U need a secret key to access this variable.
      */
     public var nvmData: Data?
+    
+    public init(objectId: String,
+                updatedAt: Date,
+                
+                compicRequest: CompicRequest,
+                
+                name: String,
+                url: String,
+                website: String,
+                countries: [String],
+                
+                iconImage: Data,
+                backgroundImage: Data) {
+        self.objectId = objectId
+        self.updatedAt = updatedAt
+        
+        self.storedAt = Date()
+        
+        self.compicRequest = compicRequest
+        
+        self.name = name
+        self.url = url
+        self.website = website
+        self.countries = countries
+        
+        self.iconImage = iconImage
+        self.backgroundImage = backgroundImage
+    }
 }
 
 
