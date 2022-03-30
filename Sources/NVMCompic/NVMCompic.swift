@@ -10,11 +10,15 @@ public struct NVMCompic {
     
     private var compicPath: URL?
 
-    mutating public func initialize(compicPath: URL) {
-        self.compicPath = compicPath
+    mutating public func initialize(_ settings: CompicSettings) {
+        self.compicPath = settings.compicPath
         
         Task.init {
             try await NVMCompic.sharedInstance.checkForUpdates()
+            
+            if settings.clearUnusedCompics != .never {
+                try await NVMCompic.checkCompicCache(settings.clearUnusedCompics)
+            }
         }
     }
     
@@ -176,6 +180,10 @@ public struct NVMCompic {
         } else {
             throw NVMCompicError.notInitialized
         }
+    }
+    
+    private static func checkCompicCache(_ clearUnusedCompics: CompicSettings.After) async throws {
+        //Remove unused files on local device
     }
     
     public enum ImageType: String, Codable {
