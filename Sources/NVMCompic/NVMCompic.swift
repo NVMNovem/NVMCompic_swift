@@ -144,7 +144,8 @@ public struct NVMCompic {
                 let compicURL = compicPath.appendingPathComponent(request.getFileName())
                 if fileManager.fileExists(atPath: compicPath.path) {
                     if let compicData = try? Data(contentsOf: compicURL) {
-                        let compic = try decoder.decode(Compic.self, from: compicData)
+                        var compic = try decoder.decode(Compic.self, from: compicData)
+                        compic.usedAt = Date()
                         
                         compics.append(compic)
                     }
@@ -152,6 +153,7 @@ public struct NVMCompic {
             }
             
             if !compics.isEmpty {
+                try await storeCompics(compics)
                 return compics
             } else {
                 return nil
@@ -236,6 +238,7 @@ public struct NVMCompic {
 public struct Compic: Codable {
     public var objectId: String
     public var updatedAt: Date
+    public var usedAt: Date?
     
     public var compicRequest: CompicRequest
     
@@ -327,7 +330,11 @@ public struct CompicRequest: Codable, Equatable {
     }
     
     internal func getFileName() -> String {
-        return (self.getUniqueCompicString().prefix(200) + ".compic")
+        if self.url.count > 100 {
+            return (self.getUniqueCompicString().suffix(200) + ".compic")
+        } else {
+            return (self.getUniqueCompicString().prefix(200) + ".compic")
+        }
     }
     
     private func getUniqueCompicString() -> String {
