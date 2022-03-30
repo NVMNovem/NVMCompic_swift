@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Extensions.swift
 //  
 //
 //  Created by Damian Van de Kauter on 15/03/2022.
