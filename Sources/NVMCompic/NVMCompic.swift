@@ -181,18 +181,17 @@ public struct NVMCompic {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
 
         let contents = try fileManager.contentsOfDirectory(atPath: compicPath.path)
-        for compicURL in contents {
-            print("checkCache: \(compicURL)")
-            /*
-            if fileManager.fileExists(atPath: compicPath.path) {
-                if let compicData = try? Data(contentsOf: compicURL) {
-                    var compic = try decoder.decode(Compic.self, from: compicData)
-                    compic.usedAt = Date()
-                    
-                    compics.append(compic)
+        for compicFileName in contents {
+            if compicFileName.hasSuffix(".compic") {
+                let compicURL = compicPath.appendingPathComponent(compicFileName)
+                
+                if fileManager.fileExists(atPath: compicPath.path) {
+                    if let compicData = try? Data(contentsOf: compicURL) {
+                        let compic = try decoder.decode(Compic.self, from: compicData)
+                        print("usedAt: \(String(describing: compic.usedAt))")
+                    }
                 }
             }
-             */
         }
     }
     
