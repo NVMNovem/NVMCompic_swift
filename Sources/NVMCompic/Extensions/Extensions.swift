@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension String {
+internal extension String {
     func strippedUrl(keepPrefix: Bool, keepSuffix: Bool = true) -> String? {
         if !self.isEmpty {
             var theUrlString: String = self
@@ -274,7 +274,7 @@ internal func randomString(length: Int, letters: Bool, capitalLetters: Bool, num
     return String((0..<length).map{ _ in stringCharacters.randomElement()! })
 }
 
-extension String {
+internal extension String {
 
     func fromBase64() -> String? {
         guard let data = Data(base64Encoded: self) else {
@@ -288,4 +288,13 @@ extension String {
         return Data(self.utf8).base64EncodedString()
     }
 
+}
+
+internal func daysBetweenDates(_ oldDate: Date, _ newDate: Date) -> Int {
+    let diffComponents = Calendar.current.dateComponents([.day], from: oldDate, to: newDate)
+    if let days = diffComponents.day {
+        return days
+    } else {
+        return 0
+    }
 }

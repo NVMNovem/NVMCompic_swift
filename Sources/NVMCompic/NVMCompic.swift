@@ -188,7 +188,23 @@ public struct NVMCompic {
                 if fileManager.fileExists(atPath: compicPath.path) {
                     if let compicData = try? Data(contentsOf: compicURL) {
                         let compic = try decoder.decode(Compic.self, from: compicData)
-                        print("usedAt: \(String(describing: compic.usedAt))")
+                        
+                        switch clearUnusedCompics {
+                        case .never:
+                            break
+                        case .week:
+                            if daysBetweenDates(compic.storedAt, Date()) > 7 {
+                                try fileManager.removeItem(at: compicURL)
+                            }
+                        case .month:
+                            if daysBetweenDates(compic.storedAt, Date()) > 30 {
+                                try fileManager.removeItem(at: compicURL)
+                            }
+                        case .year:
+                            if daysBetweenDates(compic.storedAt, Date()) > 365 {
+                                try fileManager.removeItem(at: compicURL)
+                            }
+                        }
                     }
                 }
             }
