@@ -70,6 +70,7 @@ public struct NVMCompic {
                         return true
                     }
                 }
+                print("fetchableCompics: \(fetchableCompics.count)")
                 
                 if !fetchableCompics.isEmpty {
                     let fetchedCompics = try await fetchCompicResults(requests: fetchableCompics.map({ $0.compicRequest }))
