@@ -25,31 +25,40 @@ public struct NVMCompic {
     public func checkForUpdates() async throws {
     }
     
-    public func getCompic(request: CompicRequest) async throws -> Compic? {
-        if let localCompic = try await getLocalCompic(request: request) {
-            return localCompic
-        } else {
-            if var fetchedCompic = try await fetchCompicResults(requests: [request]).first(where: { $0.compicRequest == request }) {
-                fetchedCompic.usedAt = Date()
-                
-                try await storeCompics([fetchedCompic])
-                return fetchedCompic
+    public func getCompics(requests: [CompicRequest]) async throws -> [Compic]? {
+        var allCompics: [Compic] = []
+        var fetchableCompicRequests: [CompicRequest] = []
+        
+        for request in requests {
+            if let localCompic = try await getLocalCompic(request: request) {
+                allCompics.append(localCompic)
             } else {
-                return nil
+                fetchableCompicRequests.append(request)
             }
+        }
+        
+        if !fetchableCompicRequests.isEmpty {
+            let fetchedCompics = try await fetchCompicResults(requests: fetchableCompicRequests)
+            for var fetchedCompic in fetchedCompics {
+                fetchedCompic.usedAt = Date()
+                try await storeCompics([fetchedCompic])
+                
+                allCompics.append(fetchedCompic)
+            }
+        }
+        
+        if !allCompics.isEmpty {
+            return allCompics
+        } else {
+            return nil
         }
     }
     
-    public func getLocalCompic(request: CompicRequest) async throws -> Compic? {
-        guard let localCompics = try await getLocalCompics([request]) else { return nil }
-        return localCompics.first { $0.compicRequest == request }
-    }
-    
     public func checkImages() async throws {
-        _ = try await self.checkImagesResult()
+        //_ = try await self.checkImagesResult()
     }
     
-    public func checkImagesResult() async throws -> ImageResult {
+    /*public func checkImagesResult() async throws -> ImageResult {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
         
         if let localCompicPaths = try? fileManager.contentsOfDirectory(atPath: compicPath.path) {
@@ -88,13 +97,13 @@ public struct NVMCompic {
         } else {
             return .none
         }
-    }
+    }*/
     
     @available(iOS 15.0, macOS 12.0, *)
     public func fetchCompicResults(requests: [CompicRequest]) async throws -> [Compic] {
-        print("fetchCompicResults()")
         let headers = ["content-type": "application/json"]
         var body: [CompicRequest] = []
+        
         for var compicRequest in requests {
             if let strippedUrl = compicRequest.url.strippedUrl(keepPrefix: false, keepSuffix: true) {
                 compicRequest.url = strippedUrl
@@ -121,25 +130,47 @@ public struct NVMCompic {
     }
     
     @available(iOS 15.0, macOS 12.0, *)
-    private func fetchCompicUpdatedTimeStamps(objectIds: [String]) async throws -> [String : Date] {
+    public func fetchCompicInfo(requests: [CompicInfoRequest]) async throws -> [CompicInfo] {
         let headers = ["content-type": "application/json"]
         
-        let finalBody = try JSONSerialization.data(withJSONObject: objectIds)
-        
-        var request = URLRequest(url: URL(string: "https://compic.herokuapp.com/api")!)
-        request.httpMethod = "POST"
-        request.allHTTPHeaderFields = headers
-        request.httpBody = finalBody
-        
-        let (data, response) = try await session.data(for: request)
-        
-        print(String(decoding: data, as: UTF8.self))
-        print(response)
-        
-        return try decoder.decode([String : Date].self, from: data)
+        let requestData = try encoder.encode(requests)
+        if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [[String : Any]] {
+            let finalBody = try JSONSerialization.data(withJSONObject: requestDict)
+            
+            var request = URLRequest(url: URL(string: "https://compic.herokuapp.com/api")!)
+            request.httpMethod = "POST"
+            request.allHTTPHeaderFields = headers
+            request.httpBody = finalBody
+            
+            let (data, _) = try await session.data(for: request)
+            
+            decoder.dateDecodingStrategy = .nvmDateStrategySince1970
+            return try decoder.decode([CompicInfo].self, from: data)
+        } else {
+            throw NVMCompicError.invalidObject
+        }
     }
     
-    private func getLocalCompics(_ requests: [CompicRequest]) async throws -> [Compic]? {
+    
+    public func getLocalCompic(request: CompicRequest) async throws -> Compic? {
+        guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
+        
+        decoder.dateDecodingStrategy = .nvmDateStrategySince1970
+        
+        let compicURL = compicPath.appendingPathComponent(request.getFileName())
+        
+        if fileManager.fileExists(atPath: compicPath.path) {
+            let compicData = try Data(contentsOf: compicURL)
+            var compic = try decoder.decode(Compic.self, from: compicData)
+            compic.usedAt = Date()
+            
+            try await storeCompics([compic])
+            return compic
+        } else {
+            return nil
+        }
+    }
+    public func getLocalCompics(_ requests: [CompicRequest]) async throws -> [Compic]? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
         
         decoder.dateDecodingStrategy = .nvmDateStrategySince1970
@@ -147,14 +178,13 @@ public struct NVMCompic {
         var compics: [Compic] = []
         for request in requests {
             let compicURL = compicPath.appendingPathComponent(request.getFileName())
-            print(compicURL)
+            
             if fileManager.fileExists(atPath: compicPath.path) {
-                if let compicData = try? Data(contentsOf: compicURL) {
-                    var compic = try decoder.decode(Compic.self, from: compicData)
-                    compic.usedAt = Date()
-                    
-                    compics.append(compic)
-                }
+                let compicData = try Data(contentsOf: compicURL)
+                var compic = try decoder.decode(Compic.self, from: compicData)
+                compic.usedAt = Date()
+                
+                compics.append(compic)
             }
         }
         
