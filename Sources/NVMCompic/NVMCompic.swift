@@ -94,12 +94,11 @@ public struct NVMCompic {
         
         let compicInfos = try await fetchCompicInfo(requests: compicInfoRequests)
         
-        let requestData = try encoder.encode(compicInfos)
-        if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [String : Date] {
-            return requestDict
-        } else {
-            return [:]
+        var updatedAts: [String : Date] = [:]
+        for compicInfo in compicInfos {
+            updatedAts[compicInfo.objectId] = compicInfo.updatedAt
         }
+        return updatedAts
     }
     
     @available(iOS 15.0, macOS 12.0, *)
