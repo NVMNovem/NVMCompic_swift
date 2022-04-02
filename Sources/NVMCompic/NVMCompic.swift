@@ -95,6 +95,7 @@ public struct NVMCompic {
         
         print("compicInfoRequests: \(compicInfoRequests.count)")
         let compicInfos = try await fetchCompicInfo(requests: compicInfoRequests)
+        print("compicInfos: \(compicInfos.count)")
         
         var updatedAts: [String : Date] = [:]
         for compicInfo in compicInfos {
