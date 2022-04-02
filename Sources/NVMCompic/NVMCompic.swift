@@ -57,8 +57,8 @@ public struct NVMCompic {
     
     public func checkImagesResult() async throws -> ImageResult {
         if let localCompics = try? await getLocalCompics(nil) {
-            print("localCompics: \(localCompics)")
             let timeStamps = try await fetchUpdatedAt(objectIds: Array(localCompics.map({ $0.objectId })))
+            print("timeStamps: \(timeStamps)")
             
             if !localCompics.isEmpty && !timeStamps.isEmpty {
                 let fetchableCompics = localCompics.filter { compic in
