@@ -90,8 +90,6 @@ public struct NVMCompic {
     private func fetchUpdatedAt(_ localCompics: [Compic]) async throws -> [String : Date] {
         var compicInfoRequests: [CompicInfoRequest] = []
         for localCompic in localCompics {
-            print("fetchUpdatedAt - localCompic: \(localCompic)")
-            
             compicInfoRequests.append(CompicInfoRequest(objectId: localCompic.objectId, type: .updatedAt, identifier: localCompic.compicRequest.getFileName()))
         }
         
@@ -101,6 +99,7 @@ public struct NVMCompic {
         for compicInfo in compicInfos {
             updatedAts[compicInfo.identifier ?? compicInfo.objectId] = compicInfo.updatedAt
         }
+        print("updatedAts: \(updatedAts)")
         
         return updatedAts
     }
