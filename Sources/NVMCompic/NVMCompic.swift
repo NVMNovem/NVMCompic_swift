@@ -87,6 +87,7 @@ public struct NVMCompic {
         }
     }
     private func fetchUpdatedAt(objectIds: [String]) async throws -> [String : Date] {
+        print("objectIds: \(objectIds)")
         var compicInfoRequests: [CompicInfoRequest] = []
         for objectId in objectIds {
             compicInfoRequests.append(CompicInfoRequest(objectId: objectId, type: .updatedAt))
