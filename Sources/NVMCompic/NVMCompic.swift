@@ -58,7 +58,7 @@ public struct NVMCompic {
     public func checkImagesResult() async throws -> ImageResult {
         if let localCompics = try? await getLocalCompics(nil) {
             print("localCompics: \(localCompics)")
-            let timeStamps = try await fetchUpdatedAt(objectIds: Array(localCompics.map({ $0.objectId })))
+            let timeStamps = try await fetchUpdatedAt(localCompics)
             print("timeStamps: \(timeStamps)")
             
             if !localCompics.isEmpty && !timeStamps.isEmpty {
@@ -87,17 +87,17 @@ public struct NVMCompic {
             return .none
         }
     }
-    private func fetchUpdatedAt(objectIds: [String]) async throws -> [String : Date] {
+    private func fetchUpdatedAt(_ localCompics: [Compic]) async throws -> [String : Date] {
         var compicInfoRequests: [CompicInfoRequest] = []
-        for objectId in objectIds {
-            compicInfoRequests.append(CompicInfoRequest(objectId: objectId, type: .updatedAt))
+        for localCompic in localCompics {
+            compicInfoRequests.append(CompicInfoRequest(objectId: localCompic.objectId, type: .updatedAt, identifier: localCompic.compicRequest.getFileName()))
         }
         
         let compicInfos = try await fetchCompicInfo(requests: compicInfoRequests)
         
         var updatedAts: [String : Date] = [:]
         for compicInfo in compicInfos {
-            updatedAts[compicInfo.objectId] = compicInfo.updatedAt
+            updatedAts[compicInfo.identifier ?? compicInfo.objectId] = compicInfo.updatedAt
         }
         
         return updatedAts

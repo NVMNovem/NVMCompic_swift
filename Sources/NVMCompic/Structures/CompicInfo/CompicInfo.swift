@@ -10,6 +10,8 @@ import Foundation
 public struct CompicInfo: Codable {
     public var objectId: String
     
+    public var identifier: String?
+    
     public var updatedAt: Date?
     public var name: String?
     public var url: String?
@@ -20,6 +22,8 @@ public struct CompicInfo: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         objectId = try container.decode(String.self, forKey: .objectId)
+        
+        identifier = try? container.decode(String.self, forKey: .identifier)
         
         updatedAt = try? container.decode(Date.self, forKey: .updatedAt)
         name = try? container.decode(String.self, forKey: .name)
