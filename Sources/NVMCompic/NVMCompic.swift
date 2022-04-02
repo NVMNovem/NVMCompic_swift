@@ -64,7 +64,7 @@ public struct NVMCompic {
             if !localCompics.isEmpty && !timeStamps.isEmpty {
                 let fetchableCompics = localCompics.filter { compic in
                     let localCompicTimeStamp = compic.updatedAt
-                    if let cloudCompicTimeStamp = timeStamps[compic.objectId] {
+                    if let cloudCompicTimeStamp = timeStamps[compic.compicRequest.getFileName()] {
                         return cloudCompicTimeStamp != localCompicTimeStamp
                     } else {
                         return true
@@ -90,6 +90,8 @@ public struct NVMCompic {
     private func fetchUpdatedAt(_ localCompics: [Compic]) async throws -> [String : Date] {
         var compicInfoRequests: [CompicInfoRequest] = []
         for localCompic in localCompics {
+            print("fetchUpdatedAt - localCompic: \(localCompic)")
+            
             compicInfoRequests.append(CompicInfoRequest(objectId: localCompic.objectId, type: .updatedAt, identifier: localCompic.compicRequest.getFileName()))
         }
         
