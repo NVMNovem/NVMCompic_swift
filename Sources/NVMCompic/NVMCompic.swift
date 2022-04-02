@@ -159,7 +159,7 @@ public struct NVMCompic {
         
         let compicURL = compicPath.appendingPathComponent(request.getFileName())
         
-        if fileManager.fileExists(atPath: compicPath.path) {
+        if fileManager.fileExists(atPath: compicURL.path) {
             let compicData = try Data(contentsOf: compicURL)
             var compic = try decoder.decode(Compic.self, from: compicData)
             compic.usedAt = Date()
