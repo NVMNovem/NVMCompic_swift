@@ -57,8 +57,6 @@ public struct NVMCompic {
     
     public func checkImagesResult() async throws -> ImageResult {
         if let localCompics = try? await getLocalCompics(nil) {
-            
-            
             let timeStamps = try await fetchUpdatedAt(objectIds: Array(localCompics.map({ $0.objectId })))
             
             if !localCompics.isEmpty && !timeStamps.isEmpty {
@@ -204,6 +202,7 @@ public struct NVMCompic {
                 var localCompics: [Compic] = []
                 for localCompicFilename in localCompicFilenames {
                     let localCompicURL = compicPath.appendingPathComponent(localCompicFilename)
+                    print(localCompicURL)
                     let data: Data = try Data(contentsOf: localCompicURL)
                     let localCompic = try decoder.decode(Compic.self, from: data)
                     localCompics.append(localCompic)
