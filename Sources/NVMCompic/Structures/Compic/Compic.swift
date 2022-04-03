@@ -21,8 +21,8 @@ public struct Compic: Codable {
     public var website: String
     public var countries: [String]
     
-    public var iconImage: Data
-    public var backgroundImage: Data
+    public var iconImage: Data?
+    public var backgroundImage: Data?
     public var cardImage: Data?
     
     public var tintColor: String?
