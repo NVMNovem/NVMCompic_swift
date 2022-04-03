@@ -22,6 +22,14 @@ public struct NVMCompic {
         }
     }
     
+    public func getCompic(request: CompicRequest) async throws -> Compic? {
+        guard let compics = try await getCompics(requests: [request]) else { return nil }
+        if compics.count == 1 {
+            return compics.first
+        } else {
+            return compics.first { $0.compicRequest == request }
+        }
+    }
     public func getCompics(requests: [CompicRequest]) async throws -> [Compic]? {
         var allCompics: [Compic] = []
         var fetchableCompicRequests: [CompicRequest] = []
