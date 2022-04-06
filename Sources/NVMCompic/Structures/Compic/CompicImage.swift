@@ -10,6 +10,7 @@ import Foundation
 public struct CompicImage: Codable {
     public var type: ImageType
     public var data: Data
+    public var compicRequest: CompicRequest
     public var format: NVMCompic.ImageType?
     public var resizeType: NVMCompic.ResizeType?
     public var width: Int?

@@ -298,3 +298,9 @@ internal func daysBetweenDates(_ oldDate: Date, _ newDate: Date) -> Int {
         return 0
     }
 }
+
+extension String {
+    internal var toFileName: String {
+        return (self.toBase64().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression]).prefix(200)) + ".compic"
+    }
+}

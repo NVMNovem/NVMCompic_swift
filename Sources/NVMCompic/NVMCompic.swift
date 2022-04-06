@@ -22,6 +22,11 @@ public struct NVMCompic {
         }
     }
     
+    internal func getCompicPath() throws -> URL {
+        guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
+        return compicPath
+    }
+    
     public func getCompic(request: CompicRequest) async throws -> Compic? {
         guard let compics = try await getCompics(requests: [request]) else { return nil }
         if compics.count == 1 {
@@ -35,7 +40,7 @@ public struct NVMCompic {
         var fetchableCompicRequests: [CompicRequest] = []
         
         for request in requests {
-            if let localCompic = try await getLocalCompic(request) {
+            if let localCompic = try getLocalCompic(request) {
                 allCompics.append(localCompic)
             } else {
                 fetchableCompicRequests.append(request)
@@ -46,7 +51,7 @@ public struct NVMCompic {
             let fetchedCompics = try await fetchCompicResults(requests: fetchableCompicRequests)
             for var fetchedCompic in fetchedCompics {
                 fetchedCompic.usedAt = Date()
-                try await storeCompics([fetchedCompic])
+                try storeCompics([fetchedCompic])
                 
                 allCompics.append(fetchedCompic)
             }
@@ -64,7 +69,7 @@ public struct NVMCompic {
     }
     
     public func checkImagesResult() async throws -> ImageResult {
-        if let localCompics = try? await getLocalCompics(nil) {
+        if let localCompics = try? getLocalCompics(nil) {
             let timeStamps = try await fetchUpdatedAt(localCompics)
             
             if !localCompics.isEmpty && !timeStamps.isEmpty {
@@ -79,7 +84,7 @@ public struct NVMCompic {
                 
                 if !fetchableCompics.isEmpty {
                     let fetchedCompics = try await fetchCompicResults(requests: fetchableCompics.map({ $0.compicRequest }))
-                    try await storeCompics(fetchedCompics)
+                    try storeCompics(fetchedCompics)
                     
                     return .updated
                 } else {
@@ -92,6 +97,11 @@ public struct NVMCompic {
             return .none
         }
     }
+    
+    public func downloadCompics(requests: [CompicRequest]) async throws {
+        try await storeCompics(fetchCompicResults(requests: requests))
+    }
+    
     private func fetchUpdatedAt(_ localCompics: [Compic]) async throws -> [String : Date] {
         var compicInfoRequests: [CompicInfoRequest] = []
         for localCompic in localCompics {
@@ -113,6 +123,8 @@ public struct NVMCompic {
         let headers = ["content-type": "application/json"]
         var body: [CompicRequest] = []
         
+        //Remove duplicates
+        //Try merging requests with same url
         for var compicRequest in requests {
             if let strippedUrl = compicRequest.url.strippedUrl(keepPrefix: false, keepSuffix: true) {
                 compicRequest.url = strippedUrl
@@ -161,7 +173,7 @@ public struct NVMCompic {
     }
     
     
-    public func getLocalCompic(_ request: CompicRequest) async throws -> Compic? {
+    public func getLocalCompic(_ request: CompicRequest) throws -> Compic? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
         
         decoder.dateDecodingStrategy = .nvmDateStrategySince1970
@@ -173,13 +185,13 @@ public struct NVMCompic {
             var compic = try decoder.decode(Compic.self, from: compicData)
             compic.usedAt = Date()
             
-            try await storeCompics([compic])
+            try storeCompics([compic])
             return compic
         } else {
             return nil
         }
     }
-    public func getLocalCompics(_ requests: [CompicRequest]?) async throws -> [Compic]? {
+    public func getLocalCompics(_ requests: [CompicRequest]?) throws -> [Compic]? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
         
         decoder.dateDecodingStrategy = .nvmDateStrategySince1970
@@ -199,7 +211,7 @@ public struct NVMCompic {
             }
             
             if !compics.isEmpty {
-                try await storeCompics(compics)
+                try storeCompics(compics)
                 return compics
             } else {
                 return nil
@@ -215,7 +227,7 @@ public struct NVMCompic {
                 }
                 
                 if !localCompics.isEmpty {
-                    try await storeCompics(localCompics)
+                    try storeCompics(localCompics)
                     return localCompics
                 } else {
                     return nil
@@ -226,14 +238,9 @@ public struct NVMCompic {
         }
     }
     
-    private func storeCompics(_ compics: [Compic]) async throws {
-        guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
-        
-        encoder.dateEncodingStrategy = .nvmDateStrategySince1970
-        
+    private func storeCompics(_ compics: [Compic]) throws {
         for compic in compics {
-            let compicData = try encoder.encode(compic)
-            try compicData.write(to: compicPath.appendingPathComponent(compic.compicRequest.getFileName()))
+            try compic.save()
         }
     }
     

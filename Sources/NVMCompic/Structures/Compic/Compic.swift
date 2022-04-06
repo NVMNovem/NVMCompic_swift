@@ -71,11 +71,36 @@ public struct Compic: Codable {
         
         nvmData = try? container.decode(Data.self, forKey: .nvmData)
     }
+    
+    private func getCompicFile() throws -> CompicFile {
+        let compicPath = try NVMCompic.sharedInstance.getCompicPath()
+        let compicFileURL = compicPath.appendingPathComponent(url.toFileName)
+        
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .nvmDateStrategySince1970
+        
+        if FileManager.default.fileExists(atPath: compicFileURL.path), let compicData = try? Data(contentsOf: compicFileURL) {
+            var compicFile = try decoder.decode(CompicFile.self, from: compicData)
+            compicFile.usedAt = Date()
+            
+            try compicFile.save()
+            
+            return compicFile
+        } else {
+            return CompicFile(compic: self)
+        }
+    }
+    
+    public func save() throws {
+        let compicFile = try self.getCompicFile()
+        try compicFile.saveCompic(self)
+        try compicFile.save()
+    }
 }
 
 
 extension Compic: CustomStringConvertible {
     public var description: String {
-        return "\r  [\(self.objectId)]\r  \r  \(self.name)\r  Url: \(self.url)\r  Website: \(self.website)\r  Countries: \(self.countries)\r  Icon Image: \(self.iconImage)\r  Background Image: \(self.backgroundImage)\r  Card Image: \(String(describing: self.cardImage))\r\r  Tint Color: \(String(describing: self.tintColor))\r  Text Color: \(String(describing: self.textColor))\r  Background Color: \(String(describing: self.backgroundColor))\r  Button Color: \(String(describing: self.buttonColor))\r  Fill Color: \(String(describing: self.fillColor))\r  Border Color: \(String(describing: self.borderColor))\r  Header Color: \(String(describing: self.headerColor))\r\r  CompicRequest: \(String(describing: self.compicRequest))\r\r  NVMData: \(String(describing: self.nvmData))\r\r  Updated At: \(String(describing: self.updatedAt))\r"
+        return "\r  [\(self.objectId)]\r  \r  \(self.name)\r  Url: \(self.url)\r  Website: \(self.website)\r  Countries: \(self.countries)\r  Icon Image: \(self.iconImage)\r  Background Image: \(String(describing: self.backgroundImage))\r  Card Image: \(String(describing: self.cardImage))\r\r  Tint Color: \(String(describing: self.tintColor))\r  Text Color: \(String(describing: self.textColor))\r  Background Color: \(String(describing: self.backgroundColor))\r  Button Color: \(String(describing: self.buttonColor))\r  Fill Color: \(String(describing: self.fillColor))\r  Border Color: \(String(describing: self.borderColor))\r  Header Color: \(String(describing: self.headerColor))\r\r  CompicRequest: \(String(describing: self.compicRequest))\r\r  NVMData: \(String(describing: self.nvmData))\r\r  Updated At: \(String(describing: self.updatedAt))\r"
     }
 }
