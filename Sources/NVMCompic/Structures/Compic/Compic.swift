@@ -72,7 +72,113 @@ public struct Compic: Codable {
         nvmData = try? container.decode(Data.self, forKey: .nvmData)
     }
     
-    private func getCompicFile() throws -> CompicFile {
+    internal init(objectId: String,
+                  updatedAt: Date,
+                  
+                  storedAt: Date = Date(),
+                  usedAt: Date? = nil,
+    
+                  compicRequest: CompicRequest,
+    
+                  name: String,
+                  url: String,
+                  website: String,
+                  countries: [String],
+                  
+                  iconImage: Data?,
+                  backgroundImage: Data?,
+                  cardImage: Data?,
+    
+                  tintColor: String?,
+                  textColor: String?,
+                  backgroundColor: String?,
+                  buttonColor: String?,
+                  fillColor: String?,
+                  borderColor: String?,
+                  headerColor: String?,
+    
+                  nvmData: Data?) throws {
+        
+        self.objectId = objectId
+        self.updatedAt = updatedAt
+        
+        self.storedAt = storedAt
+        self.usedAt = usedAt
+        
+        self.compicRequest = compicRequest
+        
+        self.name = name
+        self.url = url
+        self.website = website
+        self.countries = countries
+        
+        self.iconImage = iconImage
+        self.backgroundImage = backgroundImage
+        self.cardImage = cardImage
+        
+        self.tintColor = tintColor
+        self.textColor = textColor
+        self.backgroundColor = backgroundColor
+        self.buttonColor = buttonColor
+        self.fillColor = fillColor
+        self.borderColor = borderColor
+        self.headerColor = headerColor
+        
+        self.nvmData = nvmData
+    }
+    
+    internal convenience init?(compicFile: CompicFile?, compicRequest: CompicRequest?) {
+        guard let compicFile = compicFile else { return nil }
+        guard let compicRequest = compicRequest else { return nil }
+        guard let compicImageType = compicRequest.compicImageType else { return nil }
+        
+        Compic(objectId: compicFile.objectId,
+               updatedAt: compicFile.updatedAt,
+               
+               storedAt: compicFile.storedAt,
+               usedAt: compicFile.usedAt,
+               
+               compicRequest: compicRequest,
+               
+               name: compicFile.name,
+               url: compicFile.url,
+               website: compicFile.website,
+               countries: compicFile.countries,
+               
+               iconImage: compicFile.iconImages.first(where: { compicImage in
+            compicImage.type == compicImageType &&
+            compicImage.width == compicRequest.iconWidth &&
+            compicImage.height == compicRequest.iconHeight &&
+            compicImage.format == compicRequest.iconFormat &&
+            compicImage.resizeType == compicRequest.iconResizeType
+        }),
+               backgroundImage: compicFile.iconImages.first(where: { compicImage in
+            compicImage.type == compicImageType &&
+            compicImage.width == compicRequest.backgroundWidth &&
+            compicImage.height == compicRequest.backgroundHeight &&
+            compicImage.format == compicRequest.backgroundFormat &&
+            compicImage.resizeType == compicRequest.backgroundResizeType
+        }),
+               cardImage: compicFile.iconImages.first(where: { compicImage in
+            compicImage.type == compicImageType &&
+            compicImage.width == compicRequest.cardWidth &&
+            compicImage.height == compicRequest.cardHeight &&
+            compicImage.format == compicRequest.cardFormat &&
+            compicImage.resizeType == compicRequest.cardResizeType
+        }),
+               
+               tintColor: compicFile.tintColor,
+               textColor: compicFile.textColor,
+               backgroundColor: compicFile.backgroundColor,
+               buttonColor: compicFile.buttonColor,
+               fillColor: compicFile.fillColor,
+               borderColor: compicFile.borderColor,
+               headerColor: compicFile.headerColor,
+               
+               nvmData: compicFile.nvmData)
+    }
+    
+    internal func getCompicFile() throws -> CompicFile {
         let compicPath = try NVMCompic.sharedInstance.getCompicPath()
         let compicFileURL = compicPath.appendingPathComponent(url.toFileName)
         

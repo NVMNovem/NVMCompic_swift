@@ -27,21 +27,21 @@ public struct NVMCompic {
         return compicPath
     }
     
-    public func getCompic(request: CompicRequest) async throws -> Compic? {
-        guard let compics = try await getCompics(requests: [request]) else { return nil }
-        if compics.count == 1 {
-            return compics.first
+    public func getCompicFile(request: CompicRequest) async throws -> CompicFile? {
+        guard let compicFiles = try await getCompicFiles(requests: [request]) else { return nil }
+        if compicFiles.count == 1 {
+            return compicFiles.first
         } else {
-            return compics.first { $0.compicRequest == request }
+            return compicFiles.first { $0.compicRequest == request } //TODO: Moet beter
         }
     }
-    public func getCompics(requests: [CompicRequest]) async throws -> [Compic]? {
-        var allCompics: [Compic] = []
+    public func getCompicFiles(requests: [CompicRequest]) async throws -> [CompicFile]? {
+        var allCompicFiles: [CompicFile] = []
         var fetchableCompicRequests: [CompicRequest] = []
         
         for request in requests {
-            if let localCompic = try getLocalCompic(request) {
-                allCompics.append(localCompic)
+            if let localCompicFile = try getLocalCompicFile(request) {
+                allCompicFiles.append(localCompicFile)
             } else {
                 fetchableCompicRequests.append(request)
             }
@@ -51,14 +51,14 @@ public struct NVMCompic {
             let fetchedCompics = try await fetchCompicResults(requests: fetchableCompicRequests)
             for var fetchedCompic in fetchedCompics {
                 fetchedCompic.usedAt = Date()
-                try storeCompics([fetchedCompic])
+                try fetchedCompic.save()
                 
-                allCompics.append(fetchedCompic)
+                allCompicFiles.append(try fetchedCompic.getCompicFile())
             }
         }
         
-        if !allCompics.isEmpty {
-            return allCompics
+        if !allCompicFiles.isEmpty {
+            return allCompicFiles
         } else {
             return nil
         }
@@ -69,7 +69,7 @@ public struct NVMCompic {
     }
     
     public func checkImagesResult() async throws -> ImageResult {
-        if let localCompics = try? getLocalCompics(nil) {
+        if let localCompics = try? getLocalCompicFiles(nil) {
             let timeStamps = try await fetchUpdatedAt(localCompics)
             
             if !localCompics.isEmpty && !timeStamps.isEmpty {
@@ -102,10 +102,10 @@ public struct NVMCompic {
         try await storeCompics(fetchCompicResults(requests: requests))
     }
     
-    private func fetchUpdatedAt(_ localCompics: [Compic]) async throws -> [String : Date] {
+    private func fetchUpdatedAt(_ localCompics: [CompicFile]) async throws -> [String : Date] {
         var compicInfoRequests: [CompicInfoRequest] = []
         for localCompic in localCompics {
-            compicInfoRequests.append(CompicInfoRequest(objectId: localCompic.objectId, type: .updatedAt, identifier: localCompic.compicRequest.getFileName()))
+            compicInfoRequests.append(CompicInfoRequest(objectId: localCompic.objectId, type: .updatedAt, identifier: localCompic.url.toFileName))
         }
         
         let compicInfos = try await fetchCompicInfo(requests: compicInfoRequests)
@@ -152,83 +152,86 @@ public struct NVMCompic {
     
     @available(iOS 15.0, macOS 12.0, *)
     public func fetchCompicInfo(requests: [CompicInfoRequest]) async throws -> [CompicInfo] {
-        let headers = ["content-type": "application/json"]
-        
-        let requestData = try encoder.encode(requests)
-        if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [[String : String]] {
-            let finalBody = try JSONSerialization.data(withJSONObject: requestDict)
+        if !requests.isEmpty {
+            let headers = ["content-type": "application/json"]
             
-            var request = URLRequest(url: URL(string: "https://compic.herokuapp.com/info")!)
-            request.httpMethod = "POST"
-            request.allHTTPHeaderFields = headers
-            request.httpBody = finalBody
-            
-            let (data, _) = try await session.data(for: request)
-            
-            decoder.dateDecodingStrategy = .nvmDateStrategySince1970
-            return try decoder.decode([CompicInfo].self, from: data)
+            let requestData = try encoder.encode(requests)
+            if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [[String : String]] {
+                let finalBody = try JSONSerialization.data(withJSONObject: requestDict)
+                
+                var request = URLRequest(url: URL(string: "https://compic.herokuapp.com/info")!)
+                request.httpMethod = "POST"
+                request.allHTTPHeaderFields = headers
+                request.httpBody = finalBody
+                
+                let (data, _) = try await session.data(for: request)
+                
+                decoder.dateDecodingStrategy = .nvmDateStrategySince1970
+                return try decoder.decode([CompicInfo].self, from: data)
+            } else {
+                throw NVMCompicError.invalidObject
+            }
         } else {
-            throw NVMCompicError.invalidObject
+            return []
         }
     }
     
     
-    public func getLocalCompic(_ request: CompicRequest) throws -> Compic? {
+    public func getLocalCompicFile(_ request: CompicRequest) throws -> CompicFile? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
         
         decoder.dateDecodingStrategy = .nvmDateStrategySince1970
         
-        let compicURL = compicPath.appendingPathComponent(request.getFileName())
+        let compicFileURL = compicPath.appendingPathComponent(request.url.toFileName)
         
-        if fileManager.fileExists(atPath: compicURL.path) {
-            let compicData = try Data(contentsOf: compicURL)
-            var compic = try decoder.decode(Compic.self, from: compicData)
-            compic.usedAt = Date()
+        if fileManager.fileExists(atPath: compicFileURL.path) {
+            let compicFileData = try Data(contentsOf: compicFileURL)
+            var compicFile = try decoder.decode(CompicFile.self, from: compicFileData)
+            compicFile.usedAt = Date()
+            try compicFile.save()
             
-            try storeCompics([compic])
-            return compic
+            return compicFile
         } else {
             return nil
         }
     }
-    public func getLocalCompics(_ requests: [CompicRequest]?) throws -> [Compic]? {
+    public func getLocalCompicFiles(_ requests: [CompicRequest]?) throws -> [CompicFile]? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
         
         decoder.dateDecodingStrategy = .nvmDateStrategySince1970
         
         if let requests = requests {
-            var compics: [Compic] = []
+            var compicFiles: [CompicFile] = []
             for request in requests {
-                let compicURL = compicPath.appendingPathComponent(request.getFileName())
+                let compicURL = compicPath.appendingPathComponent(request.url.toFileName)
                 
                 if fileManager.fileExists(atPath: compicPath.path) {
                     let compicData = try Data(contentsOf: compicURL)
-                    var compic = try decoder.decode(Compic.self, from: compicData)
-                    compic.usedAt = Date()
+                    var compicFile = try decoder.decode(CompicFile.self, from: compicData)
+                    compicFile.usedAt = Date()
+                    try compicFile.save()
                     
-                    compics.append(compic)
+                    compicFiles.append(compicFile)
                 }
             }
             
-            if !compics.isEmpty {
-                try storeCompics(compics)
-                return compics
+            if !compicFiles.isEmpty {
+                return compicFiles
             } else {
                 return nil
             }
         } else {
-            if let localCompicFilenames = try? fileManager.contentsOfDirectory(atPath: compicPath.path) {
-                var localCompics: [Compic] = []
-                for localCompicFilename in localCompicFilenames {
-                    let localCompicURL = compicPath.appendingPathComponent(localCompicFilename)
+            if let localCompicFilesFilenames = try? fileManager.contentsOfDirectory(atPath: compicPath.path) {
+                var localCompicFiles: [CompicFile] = []
+                for localCompicFileFilename in localCompicFilesFilenames {
+                    let localCompicURL = compicPath.appendingPathComponent(localCompicFileFilename)
                     let data: Data = try Data(contentsOf: localCompicURL)
-                    let localCompic = try decoder.decode(Compic.self, from: data)
-                    localCompics.append(localCompic)
+                    let localCompicFile = try decoder.decode(CompicFile.self, from: data)
+                    localCompicFiles.append(localCompicFile)
                 }
                 
-                if !localCompics.isEmpty {
-                    try storeCompics(localCompics)
-                    return localCompics
+                if !localCompicFiles.isEmpty {
+                    return localCompicFiles
                 } else {
                     return nil
                 }
@@ -238,7 +241,7 @@ public struct NVMCompic {
         }
     }
     
-    private func storeCompics(_ compics: [Compic]) throws {
+    internal func storeCompics(_ compics: [Compic]) throws {
         for compic in compics {
             try compic.save()
         }

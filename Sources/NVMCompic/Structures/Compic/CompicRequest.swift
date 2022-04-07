@@ -112,3 +112,20 @@ public struct CompicRequest: Codable, Equatable {
         return uniqueString.toBase64().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
     }
 }
+
+extension CompicRequest {
+    internal var compicImageType: CompicImage.ImageType? {
+        if ((self.icon == true) && ((self.background == false)) && (self.card == false)) {
+            return .icon
+        }
+        else if ((self.icon == false) && ((self.background == true)) && (self.card == false)) {
+            return .background
+        }
+        else if ((self.icon == false) && ((self.background == false)) && (self.card == true)) {
+            return .card
+        }
+        else {
+            return nil
+        }
+    }
+}
