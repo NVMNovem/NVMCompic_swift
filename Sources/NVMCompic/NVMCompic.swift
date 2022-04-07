@@ -177,6 +177,12 @@ public struct NVMCompic {
     }
     
     
+    public func getLocalCompic(_ request: CompicRequest) throws -> Compic? {
+        guard let localCompicFile = try self.getLocalCompicFile(request) else { return nil }
+        
+        return Compic(compicFile: localCompicFile, compicRequest: request)
+    }
+    
     public func getLocalCompicFile(_ request: CompicRequest) throws -> CompicFile? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
         
