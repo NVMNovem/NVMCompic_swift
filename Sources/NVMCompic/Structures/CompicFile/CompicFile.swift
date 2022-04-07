@@ -66,7 +66,7 @@ public struct CompicFile: Codable {
         self.borderColor = compic.borderColor
         self.headerColor = compic.headerColor
         
-        try self.saveCompic(compic)
+        try? self.saveCompic(compic)
     }
     
     internal func save() throws {
@@ -80,10 +80,11 @@ public struct CompicFile: Codable {
         try compicFileData.write(to: compicFileURL)
     }
     
-    public func saveCompic(_ compic: Compic) throws {
+    public mutating func saveCompic(_ compic: Compic) throws {
         if let compicIconImage = compic.iconImage {
             self.iconImages.append(CompicImage(type: .icon,
                                                data: compicIconImage,
+                                               compicRequest: compic.compicRequest,
                                                format: compic.compicRequest.iconFormat,
                                                resizeType: compic.compicRequest.iconResizeType,
                                                width: compic.compicRequest.iconWidth,
@@ -91,28 +92,30 @@ public struct CompicFile: Codable {
         }
         if let compicBackgroundImage = compic.backgroundImage {
             self.backgroundImages.append(CompicImage(type: .background,
-                                               data: compicBackgroundImage,
-                                               format: compic.compicRequest.backgroundFormat,
-                                               resizeType: compic.compicRequest.backgroundResizeType,
-                                               width: compic.compicRequest.backgroundWidth,
-                                               height: compic.compicRequest.backgroundHeight))
+                                                     data: compicBackgroundImage,
+                                                     compicRequest: compic.compicRequest,
+                                                     format: compic.compicRequest.backgroundFormat,
+                                                     resizeType: compic.compicRequest.backgroundResizeType,
+                                                     width: compic.compicRequest.backgroundWidth,
+                                                     height: compic.compicRequest.backgroundHeight))
         }
         if let compicCardImage = compic.cardImage {
             self.backgroundImages.append(CompicImage(type: .card,
-                                               data: compicCardImage,
-                                               format: compic.compicRequest.cardFormat,
-                                               resizeType: compic.compicRequest.cardResizeType,
-                                               width: compic.compicRequest.cardWidth,
-                                               height: compic.compicRequest.cardHeight))
+                                                     data: compicCardImage,
+                                                     compicRequest: compic.compicRequest,
+                                                     format: compic.compicRequest.cardFormat,
+                                                     resizeType: compic.compicRequest.cardResizeType,
+                                                     width: compic.compicRequest.cardWidth,
+                                                     height: compic.compicRequest.cardHeight))
         }
         
-        if ((compic.compicRequest.info == nil) || (compic.compicRequest.info = true)) {
+        if ((compic.compicRequest.info == nil) || (compic.compicRequest.info == true)) {
             self.name = compic.name
             self.url = compic.url
             self.website = compic.website
             self.countries = compic.countries
         }
-        if ((compic.compicRequest.colors == nil) || (compic.compicRequest.colors = true)) {
+        if ((compic.compicRequest.colors == nil) || (compic.compicRequest.colors == true)) {
             self.tintColor = compic.tintColor
             self.textColor = compic.textColor
             self.backgroundColor = compic.backgroundColor

@@ -97,7 +97,7 @@ public struct Compic: Codable {
                   borderColor: String?,
                   headerColor: String?,
     
-                  nvmData: Data?) throws {
+                  nvmData: Data?) {
         
         self.objectId = objectId
         self.updatedAt = updatedAt
@@ -127,55 +127,74 @@ public struct Compic: Codable {
         self.nvmData = nvmData
     }
     
-    internal convenience init?(compicFile: CompicFile?, compicRequest: CompicRequest?) {
+    internal init?(compicFile: CompicFile?, compicRequest: CompicRequest?) {
         guard let compicFile = compicFile else { return nil }
         guard let compicRequest = compicRequest else { return nil }
-        guard let compicImageType = compicRequest.compicImageType else { return nil }
         
-        Compic(objectId: compicFile.objectId,
-               updatedAt: compicFile.updatedAt,
+        self.objectId = compicFile.objectId
+        self.updatedAt = compicFile.updatedAt
+        
+        self.storedAt = compicFile.storedAt
+        self.usedAt = compicFile.usedAt
+        
+        self.compicRequest = compicRequest
+        
+        self.name = compicFile.name
+        self.url = compicFile.url
+        self.website = compicFile.website
+        self.countries = compicFile.countries
                
-               storedAt: compicFile.storedAt,
-               usedAt: compicFile.usedAt,
-               
-               compicRequest: compicRequest,
-               
-               name: compicFile.name,
-               url: compicFile.url,
-               website: compicFile.website,
-               countries: compicFile.countries,
-               
-               iconImage: compicFile.iconImages.first(where: { compicImage in
-            compicImage.type == compicImageType &&
-            compicImage.width == compicRequest.iconWidth &&
-            compicImage.height == compicRequest.iconHeight &&
-            compicImage.format == compicRequest.iconFormat &&
-            compicImage.resizeType == compicRequest.iconResizeType
-        }),
-               backgroundImage: compicFile.iconImages.first(where: { compicImage in
-            compicImage.type == compicImageType &&
-            compicImage.width == compicRequest.backgroundWidth &&
-            compicImage.height == compicRequest.backgroundHeight &&
-            compicImage.format == compicRequest.backgroundFormat &&
-            compicImage.resizeType == compicRequest.backgroundResizeType
-        }),
-               cardImage: compicFile.iconImages.first(where: { compicImage in
-            compicImage.type == compicImageType &&
-            compicImage.width == compicRequest.cardWidth &&
-            compicImage.height == compicRequest.cardHeight &&
-            compicImage.format == compicRequest.cardFormat &&
-            compicImage.resizeType == compicRequest.cardResizeType
-        }),
-               
-               tintColor: compicFile.tintColor,
-               textColor: compicFile.textColor,
-               backgroundColor: compicFile.backgroundColor,
-               buttonColor: compicFile.buttonColor,
-               fillColor: compicFile.fillColor,
-               borderColor: compicFile.borderColor,
-               headerColor: compicFile.headerColor,
-               
-               nvmData: compicFile.nvmData)
+        let compicFileIcon = compicFile.iconImages.first(where: { compicImage in
+            compicImage.compicRequest == compicRequest
+        })?.data
+        let compicFileBackground = compicFile.backgroundImages.first(where: { compicImage in
+            compicImage.compicRequest == compicRequest
+        })?.data
+        let compicFileCard = compicFile.cardImages.first(where: { compicImage in
+            compicImage.compicRequest == compicRequest
+        })?.data
+        
+        
+        if ((compicFileIcon != nil) || (compicFileBackground != nil) || (compicFileCard != nil)) {
+            self.iconImage = compicFileIcon
+            self.backgroundImage = compicFileBackground
+            self.cardImage = compicFileCard
+        } else {
+            self.iconImage = compicFile.iconImages.first(where: { compicImage in
+                compicImage.type == .icon &&
+                compicImage.width == compicRequest.iconWidth &&
+                compicImage.height == compicRequest.iconHeight &&
+                compicImage.format == compicRequest.iconFormat &&
+                compicImage.resizeType == compicRequest.iconResizeType
+            })?.data
+            
+            self.backgroundImage = compicFile.backgroundImages.first(where: { compicImage in
+                compicImage.type == .background &&
+                compicImage.width == compicRequest.backgroundWidth &&
+                compicImage.height == compicRequest.backgroundHeight &&
+                compicImage.format == compicRequest.backgroundFormat &&
+                compicImage.resizeType == compicRequest.backgroundResizeType
+            })?.data
+            
+            self.cardImage = compicFile.cardImages.first(where: { compicImage in
+                compicImage.type == .card &&
+                compicImage.width == compicRequest.cardWidth &&
+                compicImage.height == compicRequest.cardHeight &&
+                compicImage.format == compicRequest.cardFormat &&
+                compicImage.resizeType == compicRequest.cardResizeType
+            })?.data
+        }
+        
+        
+        self.tintColor = compicFile.tintColor
+        self.textColor = compicFile.textColor
+        self.backgroundColor = compicFile.backgroundColor
+        self.buttonColor = compicFile.buttonColor
+        self.fillColor = compicFile.fillColor
+        self.borderColor = compicFile.borderColor
+        self.headerColor = compicFile.headerColor
+        
+        self.nvmData = compicFile.nvmData
     }
     
     internal func getCompicFile() throws -> CompicFile {
@@ -198,15 +217,14 @@ public struct Compic: Codable {
     }
     
     public func save() throws {
-        let compicFile = try self.getCompicFile()
+        var compicFile = try self.getCompicFile()
         try compicFile.saveCompic(self)
-        try compicFile.save()
     }
 }
 
 
 extension Compic: CustomStringConvertible {
     public var description: String {
-        return "\r  [\(self.objectId)]\r  \r  \(self.name)\r  Url: \(self.url)\r  Website: \(self.website)\r  Countries: \(self.countries)\r  Icon Image: \(self.iconImage)\r  Background Image: \(String(describing: self.backgroundImage))\r  Card Image: \(String(describing: self.cardImage))\r\r  Tint Color: \(String(describing: self.tintColor))\r  Text Color: \(String(describing: self.textColor))\r  Background Color: \(String(describing: self.backgroundColor))\r  Button Color: \(String(describing: self.buttonColor))\r  Fill Color: \(String(describing: self.fillColor))\r  Border Color: \(String(describing: self.borderColor))\r  Header Color: \(String(describing: self.headerColor))\r\r  CompicRequest: \(String(describing: self.compicRequest))\r\r  NVMData: \(String(describing: self.nvmData))\r\r  Updated At: \(String(describing: self.updatedAt))\r"
+        return "\r  [\(self.objectId)]\r  \r  \(self.name)\r  Url: \(self.url)\r  Website: \(self.website)\r  Countries: \(self.countries)\r  Icon Image: \(String(describing: self.iconImage))\r  Background Image: \(String(describing: self.backgroundImage))\r  Card Image: \(String(describing: self.cardImage))\r\r  Tint Color: \(String(describing: self.tintColor))\r  Text Color: \(String(describing: self.textColor))\r  Background Color: \(String(describing: self.backgroundColor))\r  Button Color: \(String(describing: self.buttonColor))\r  Fill Color: \(String(describing: self.fillColor))\r  Border Color: \(String(describing: self.borderColor))\r  Header Color: \(String(describing: self.headerColor))\r\r  CompicRequest: \(String(describing: self.compicRequest))\r\r  NVMData: \(String(describing: self.nvmData))\r\r  Updated At: \(String(describing: self.updatedAt))\r"
     }
 }
