@@ -128,3 +128,9 @@ public struct CompicFile: Codable {
         try self.save()
     }
 }
+
+extension CompicFile {
+    public func compic(request: CompicRequest) -> Compic? {
+        return Compic(compicFile: self, compicRequest: request)
+    }
+}

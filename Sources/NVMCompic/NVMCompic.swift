@@ -27,12 +27,45 @@ public struct NVMCompic {
         return compicPath
     }
     
+    
+    public func getCompic(request: CompicRequest) async throws -> Compic? {
+        guard let compicFile = try await getCompicFile(request: request) else { return nil }
+        return compicFile.compic(request: request)
+    }
     public func getCompicFile(request: CompicRequest) async throws -> CompicFile? {
         guard let compicFiles = try await getCompicFiles(requests: [request]) else { return nil }
         if compicFiles.count == 1 {
             return compicFiles.first
         } else {
             return compicFiles.first { $0.compicRequest == request } //TODO: Moet beter
+        }
+    }
+    public func getCompics(requests: [CompicRequest]) async throws -> [Compic]? {
+        var allCompicFiles: [Compic] = []
+        var fetchableCompicRequests: [CompicRequest] = []
+        
+        for request in requests {
+            if let localCompicFile = try getLocalCompicFile(request)?.compic(request: request) {
+                allCompicFiles.append(localCompicFile)
+            } else {
+                fetchableCompicRequests.append(request)
+            }
+        }
+        
+        if !fetchableCompicRequests.isEmpty {
+            let fetchedCompics = try await fetchCompicResults(requests: fetchableCompicRequests)
+            for var fetchedCompic in fetchedCompics {
+                fetchedCompic.usedAt = Date()
+                try fetchedCompic.save()
+                
+                allCompicFiles.append(fetchedCompic)
+            }
+        }
+        
+        if !allCompicFiles.isEmpty {
+            return allCompicFiles
+        } else {
+            return nil
         }
     }
     public func getCompicFiles(requests: [CompicRequest]) async throws -> [CompicFile]? {
