@@ -167,9 +167,7 @@ public struct NVMCompic {
         }
         
         let requestData = try encoder.encode(body)
-        print("requestData: \(requestData)")
         if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [[String : Any]] {
-            print("requestDict: \(requestDict)")
             let finalBody = try JSONSerialization.data(withJSONObject: requestDict)
             
             var request = URLRequest(url: URL(string: "https://compic.herokuapp.com/api")!)
@@ -178,9 +176,15 @@ public struct NVMCompic {
             request.httpBody = finalBody
             
             let (data, _) = try await session.data(for: request)
+            print("data: \(data)")
             
-            decoder.dateDecodingStrategy = .nvmDateStrategySince1970
-            return try decoder.decode([Compic].self, from: data)
+            do {
+                decoder.dateDecodingStrategy = .nvmDateStrategySince1970
+                return try decoder.decode([Compic].self, from: data)
+            } catch let therror {
+                print("therror: \(therror)")
+                throw therror
+            }
         } else {
             throw NVMCompicError.invalidObject
         }
