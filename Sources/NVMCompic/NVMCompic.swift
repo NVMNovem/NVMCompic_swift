@@ -176,13 +176,12 @@ public struct NVMCompic {
             request.httpBody = finalBody
             
             let (data, _) = try await session.data(for: request)
-            print("data: \(data)")
+            print("data: \(String(decoding: data, as: UTF8.self))")
             
             do {
                 decoder.dateDecodingStrategy = .nvmDateStrategySince1970
                 return try decoder.decode([Compic].self, from: data)
             } catch let therror {
-                print("therror: \(therror)")
                 throw therror
             }
         } else {
