@@ -218,7 +218,7 @@ public struct NVMCompic {
     public func getLocalCompic(_ request: CompicRequest) throws -> Compic? {
         guard let localCompicFile = try self.getLocalCompicFile(request) else { return nil }
         print("getLocalCompic()")
-        print(localCompicFile)
+        print(localCompicFile.compic(request: request))
         return localCompicFile.compic(request: request)
     }
     
