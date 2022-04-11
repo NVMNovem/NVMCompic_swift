@@ -87,7 +87,7 @@ public struct CompicRequest: Codable, Equatable {
         self.nvmSecret = nvmSecret
     }
     
-    private func getIdentifier() -> String { //Only used for Equatable protocol
+    internal func getIdentifier() -> String { //Only used for Equatable protocol
         var uniqueString = "url:" + self.url
         
         if let iconVar = self.icon { uniqueString += "icon:" + String(iconVar) }
