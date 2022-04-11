@@ -86,6 +86,9 @@ public struct CompicFile: Codable {
     
     public mutating func saveCompic(_ compic: Compic) throws {
         if let compicIconImage = compic.iconImage {
+            self.iconImages.removeAll { compicImage in
+                compicImage.compicRequest == compic.compicRequest
+            }
             self.iconImages.append(CompicImage(type: .icon,
                                                data: compicIconImage,
                                                compicRequest: compic.compicRequest,
@@ -95,6 +98,9 @@ public struct CompicFile: Codable {
                                                height: compic.compicRequest.iconHeight))
         }
         if let compicBackgroundImage = compic.backgroundImage {
+            self.backgroundImages.removeAll { compicImage in
+                compicImage.compicRequest == compic.compicRequest
+            }
             self.backgroundImages.append(CompicImage(type: .background,
                                                      data: compicBackgroundImage,
                                                      compicRequest: compic.compicRequest,
@@ -104,7 +110,10 @@ public struct CompicFile: Codable {
                                                      height: compic.compicRequest.backgroundHeight))
         }
         if let compicCardImage = compic.cardImage {
-            self.backgroundImages.append(CompicImage(type: .card,
+            self.cardImages.removeAll { compicImage in
+                compicImage.compicRequest == compic.compicRequest
+            }
+            self.cardImages.append(CompicImage(type: .card,
                                                      data: compicCardImage,
                                                      compicRequest: compic.compicRequest,
                                                      format: compic.compicRequest.cardFormat,
