@@ -157,7 +157,7 @@ public struct Compic: Codable {
         let compicFileIcon = compicFile.iconImages.first(where: { compicImage in
             print("requestId 1: \(compicImage.compicRequest.getIdentifier())")
             print("requestId 2: \(compicRequest.getIdentifier())")
-            compicImage.compicRequest == compicRequest
+            return compicImage.compicRequest == compicRequest
         })?.data
         let compicFileBackground = compicFile.backgroundImages.first(where: { compicImage in
             compicImage.compicRequest == compicRequest
@@ -166,9 +166,9 @@ public struct Compic: Codable {
             compicImage.compicRequest == compicRequest
         })?.data
         
-        print("compicFileIcon: \(compicFileIcon)")
-        print("compicFileBackground: \(compicFileBackground)")
-        print("compicFileCard: \(compicFileCard)")
+        print("compicFileIcon: \(String(describing: compicFileIcon))")
+        print("compicFileBackground: \(String(describing: compicFileBackground))")
+        print("compicFileCard: \(String(describing: compicFileCard))")
         
         if ((compicFileIcon != nil) || (compicFileBackground != nil) || (compicFileCard != nil)) {
             self.iconImage = compicFileIcon
