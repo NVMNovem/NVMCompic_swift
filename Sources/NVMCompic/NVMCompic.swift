@@ -45,6 +45,7 @@ public struct NVMCompic {
         var fetchableCompicRequests: [CompicRequest] = []
         
         for request in requests {
+            print("request: \(request)")
             if let localCompicFile = try getLocalCompicFile(request)?.compic(request: request) {
                 allCompicFiles.append(localCompicFile)
             } else {
