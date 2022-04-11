@@ -21,6 +21,8 @@ public struct CompicFile: Codable {
     public var website: String
     public var countries: [String]
     
+    public var iconSpan: Int?
+    
     public var iconImages: [CompicImage]
     public var backgroundImages: [CompicImage]
     public var cardImages: [CompicImage]
@@ -53,6 +55,8 @@ public struct CompicFile: Codable {
         self.url = compic.url
         self.website = compic.website
         self.countries = compic.countries
+        
+        self.iconSpan = compic.iconSpan
         
         self.iconImages = []
         self.backgroundImages = []
@@ -108,6 +112,8 @@ public struct CompicFile: Codable {
                                                      width: compic.compicRequest.cardWidth,
                                                      height: compic.compicRequest.cardHeight))
         }
+        
+        self.iconSpan = compic.iconSpan
         
         if ((compic.compicRequest.info == nil) || (compic.compicRequest.info == true)) {
             self.name = compic.name

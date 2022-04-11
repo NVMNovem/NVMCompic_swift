@@ -21,6 +21,8 @@ public struct Compic: Codable {
     public var website: String
     public var countries: [String]
     
+    public var iconSpan: Int?
+    
     public var iconImage: Data?
     public var backgroundImage: Data?
     public var cardImage: Data?
@@ -57,6 +59,8 @@ public struct Compic: Codable {
         website = try container.decode(String.self, forKey: .website)
         countries = try container.decode([String].self, forKey: .countries)
         
+        iconSpan = try container.decode(Int.self, forKey: .iconSpan)
+        
         iconImage = try container.decode(Data.self, forKey: .iconImage)
         backgroundImage = try container.decode(Data.self, forKey: .backgroundImage)
         cardImage = try? container.decode(Data.self, forKey: .cardImage)
@@ -85,6 +89,8 @@ public struct Compic: Codable {
                   website: String,
                   countries: [String],
                   
+                  iconSpan: Int?,
+                  
                   iconImage: Data?,
                   backgroundImage: Data?,
                   cardImage: Data?,
@@ -111,6 +117,8 @@ public struct Compic: Codable {
         self.url = url
         self.website = website
         self.countries = countries
+        
+        self.iconSpan = iconSpan
         
         self.iconImage = iconImage
         self.backgroundImage = backgroundImage
@@ -147,6 +155,8 @@ public struct Compic: Codable {
         self.website = compicFile.website
         self.countries = compicFile.countries
                
+        self.iconSpan = compicFile.iconSpan
+        
         let compicFileIcon = compicFile.iconImages.first(where: { compicImage in
             compicImage.compicRequest == compicRequest
         })?.data

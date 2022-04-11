@@ -109,7 +109,7 @@ public struct NVMCompic {
             if !localCompics.isEmpty && !timeStamps.isEmpty {
                 let fetchableCompics = localCompics.filter { compic in
                     let localCompicTimeStamp = compic.updatedAt
-                    if let cloudCompicTimeStamp = timeStamps[compic.compicRequest.getFileName()] {
+                    if let cloudCompicTimeStamp = timeStamps[compic.url.toFileName] {
                         return cloudCompicTimeStamp != localCompicTimeStamp
                     } else {
                         return true

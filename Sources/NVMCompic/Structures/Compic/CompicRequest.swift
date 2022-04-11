@@ -33,6 +33,10 @@ public struct CompicRequest: Codable, Equatable {
     
     public var nvmSecret: String?
     
+    public static func ==(lhs: CompicRequest, rhs: CompicRequest) -> Bool {
+        return lhs.getIdentifier() == rhs.getIdentifier()
+    }
+    
     public init(url: String,
                 
                 icon: Bool? = nil,
@@ -83,33 +87,28 @@ public struct CompicRequest: Codable, Equatable {
         self.nvmSecret = nvmSecret
     }
     
-    internal func getFileName() -> String {
-        if self.url.count > 100 {
-            return (self.getUniqueCompicString().suffix(200) + ".compic")
-        } else {
-            return (self.getUniqueCompicString().prefix(200) + ".compic")
-        }
-    }
-    
-    private func getUniqueCompicString() -> String {
-        var uniqueString = self.url
+    private func getIdentifier() -> String { //Only used for Equatable protocol
+        var uniqueString = "url:" + self.url
         
-        uniqueString += (self.iconFormat?.rawValue ?? "")
-        uniqueString += (self.iconResizeType?.rawValue ?? "")
-        uniqueString += String(self.iconWidth ?? 0)
-        uniqueString += String(self.iconHeight ?? 0)
+        if let iconVar = self.icon { uniqueString += "icon:" + String(iconVar) }
+        if let iconFormatVar = self.iconFormat { uniqueString += "iconFormat:" + iconFormatVar.rawValue }
+        if let iconResizeTypeVar = self.iconResizeType { uniqueString += "iconResizeType:" + iconResizeTypeVar.rawValue }
+        if let iconWidthVar = self.iconWidth { uniqueString += "iconWidth:" + String(iconWidthVar) }
+        if let iconHeightVar = self.iconHeight { uniqueString += "iconHeight:" + String(iconHeightVar) }
         
-        uniqueString += (self.backgroundFormat?.rawValue ?? "")
-        uniqueString += (self.backgroundResizeType?.rawValue ?? "")
-        uniqueString += String(self.backgroundWidth ?? 0)
-        uniqueString += String(self.backgroundHeight ?? 0)
+        if let backgroundVar = self.background { uniqueString += "background:" + String(backgroundVar) }
+        if let backgroundFormatVar = self.backgroundFormat { uniqueString += "backgroundFormat:" + backgroundFormatVar.rawValue }
+        if let backgroundResizeTypeVar = self.backgroundResizeType { uniqueString += "backgroundResizeType:" + backgroundResizeTypeVar.rawValue }
+        if let backgroundWidthVar = self.backgroundWidth { uniqueString += "backgroundWidth:" + String(backgroundWidthVar) }
+        if let backgroundHeightVar = self.backgroundHeight { uniqueString += "backgroundHeight:" + String(backgroundHeightVar) }
         
-        uniqueString += (self.cardFormat?.rawValue ?? "")
-        uniqueString += (self.cardResizeType?.rawValue ?? "")
-        uniqueString += String(self.cardWidth ?? 0)
-        uniqueString += String(self.cardHeight ?? 0)
+        if let cardVar = self.card { uniqueString += "card:" + String(cardVar) }
+        if let cardFormatVar = self.cardFormat { uniqueString += "cardFormat:" + cardFormatVar.rawValue }
+        if let cardResizeTypeVar = self.cardResizeType { uniqueString += "cardResizeType:" + cardResizeTypeVar.rawValue }
+        if let cardWidthVar = self.cardWidth { uniqueString += "cardWidth:" + String(cardWidthVar) }
+        if let cardHeightVar = self.cardHeight { uniqueString += "cardHeight:" + String(cardHeightVar) }
         
-        return uniqueString.toBase64().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
+        return uniqueString
     }
 }
 
