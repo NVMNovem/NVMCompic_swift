@@ -176,7 +176,6 @@ public struct NVMCompic {
             request.httpBody = finalBody
             
             let (data, _) = try await session.data(for: request)
-            print("data: \(String(decoding: data, as: UTF8.self))")
             
             do {
                 decoder.dateDecodingStrategy = .nvmDateStrategySince1970
