@@ -45,7 +45,6 @@ public struct NVMCompic {
         var fetchableCompicRequests: [CompicRequest] = []
         
         for request in requests {
-            print("request: \(request)")
             if let localCompicFile = try getLocalCompicFile(request)?.compic(request: request) {
                 allCompicFiles.append(localCompicFile)
             } else {
@@ -56,7 +55,6 @@ public struct NVMCompic {
         if !fetchableCompicRequests.isEmpty {
             let fetchedCompics = try await fetchCompicResults(requests: fetchableCompicRequests)
             for var fetchedCompic in fetchedCompics {
-                print("fetchedCompic: \(fetchedCompic)")
                 fetchedCompic.usedAt = Date()
                 try fetchedCompic.save()
                 
@@ -218,8 +216,7 @@ public struct NVMCompic {
     
     public func getLocalCompic(_ request: CompicRequest) throws -> Compic? {
         guard let localCompicFile = try self.getLocalCompicFile(request) else { return nil }
-        print("getLocalCompic()")
-        print(localCompicFile.compic(request: request))
+        
         return localCompicFile.compic(request: request)
     }
     

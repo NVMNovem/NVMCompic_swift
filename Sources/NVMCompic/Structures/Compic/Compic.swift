@@ -139,9 +139,6 @@ public struct Compic: Codable {
         guard let compicFile = compicFile else { return nil }
         guard let compicRequest = compicRequest else { return nil }
         
-        if compicRequest.url == "apple.com" {
-            print("compicRequest: \(compicRequest)")
-        }
         self.objectId = compicFile.objectId
         self.updatedAt = compicFile.updatedAt
         
