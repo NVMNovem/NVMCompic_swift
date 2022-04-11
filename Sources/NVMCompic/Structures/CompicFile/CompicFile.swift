@@ -85,6 +85,7 @@ public struct CompicFile: Codable {
     }
     
     public mutating func saveCompic(_ compic: Compic) throws {
+        print("saveCompic: \(compic)")
         if let compicIconImage = compic.iconImage {
             self.iconImages.removeAll { compicImage in
                 compicImage.compicRequest == compic.compicRequest
