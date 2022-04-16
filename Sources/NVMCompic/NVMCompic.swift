@@ -344,6 +344,18 @@ public struct NVMCompic {
         case contain = "contain"
         
         /**
+         If website is tileable, it will contain the image within both provided dimensions using "letterboxing" where necessary.
+         Else it will use **cover**.
+         */
+        case tileCover = "nvmTile?cover"
+        
+        /**
+         If website is tileable, it will contain the image within both provided dimensions using "letterboxing" where necessary.
+         Else it will use **fill**.
+         */
+        case tileFill = "nvmTile?fill"
+        
+        /**
          Ignore the aspect ratio of the input and stretch to both provided dimensions.
          */
         case fill = "fill"
