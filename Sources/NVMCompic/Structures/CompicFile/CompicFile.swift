@@ -21,7 +21,8 @@ public struct CompicFile: Codable {
     public var website: String
     public var countries: [String]
     
-    public var iconSpan: Int?
+    public var iconSpan: Int
+    public var tileable: Bool
     
     public var iconImages: [CompicImage]
     public var backgroundImages: [CompicImage]
@@ -56,6 +57,7 @@ public struct CompicFile: Codable {
         self.countries = compic.countries
         
         self.iconSpan = compic.iconSpan
+        self.tileable = compic.tileable
         
         self.iconImages = []
         self.backgroundImages = []
