@@ -61,8 +61,8 @@ public struct Compic: Codable {
         
         iconSpan = try container.decode(Int.self, forKey: .iconSpan)
         
-        iconImage = try container.decode(Data.self, forKey: .iconImage)
-        backgroundImage = try container.decode(Data.self, forKey: .backgroundImage)
+        iconImage = try? container.decode(Data.self, forKey: .iconImage)
+        backgroundImage = try? container.decode(Data.self, forKey: .backgroundImage)
         cardImage = try? container.decode(Data.self, forKey: .cardImage)
         
         tintColor = try? container.decode(String.self, forKey: .tintColor)
@@ -165,10 +165,6 @@ public struct Compic: Codable {
         let compicFileCard = compicFile.cardImages.first(where: { compicImage in
             compicImage.compicRequest == compicRequest
         })?.data
-        
-        print("compicFileIcon: \(String(describing: compicFileIcon))")
-        print("compicFileBackground: \(String(describing: compicFileBackground))")
-        print("compicFileCard: \(String(describing: compicFileCard))")
         
         if ((compicFileIcon != nil) || (compicFileBackground != nil) || (compicFileCard != nil)) {
             self.iconImage = compicFileIcon
