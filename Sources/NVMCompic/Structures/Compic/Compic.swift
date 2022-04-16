@@ -155,8 +155,6 @@ public struct Compic: Codable {
         self.iconSpan = compicFile.iconSpan
         
         let compicFileIcon = compicFile.iconImages.first(where: { compicImage in
-            print("requestId 1: \(compicImage.compicRequest.getIdentifier())")
-            print("requestId 2: \(compicRequest.getIdentifier())")
             return compicImage.compicRequest == compicRequest
         })?.data
         let compicFileBackground = compicFile.backgroundImages.first(where: { compicImage in
