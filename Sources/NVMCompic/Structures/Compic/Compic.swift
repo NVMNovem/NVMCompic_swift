@@ -16,10 +16,10 @@ public struct Compic: Codable {
     
     public var compicRequest: CompicRequest
     
-    public var name: String?
-    public var url: String?
-    public var website: String?
-    public var countries: [String]?
+    public var name: String
+    public var url: String
+    public var website: String
+    public var countries: [String]
     
     public var iconSpan: Int?
     
@@ -54,10 +54,10 @@ public struct Compic: Codable {
         
         compicRequest = try container.decode(CompicRequest.self, forKey: .compicRequest)
         
-        name = try? container.decode(String.self, forKey: .name)
-        url = try? container.decode(String.self, forKey: .url)
-        website = try? container.decode(String.self, forKey: .website)
-        countries = try? container.decode([String].self, forKey: .countries)
+        name = try container.decode(String.self, forKey: .name)
+        url = try container.decode(String.self, forKey: .url)
+        website = try container.decode(String.self, forKey: .website)
+        countries = try container.decode([String].self, forKey: .countries)
         
         iconSpan = try container.decode(Int.self, forKey: .iconSpan)
         

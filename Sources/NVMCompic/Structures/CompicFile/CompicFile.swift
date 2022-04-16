@@ -125,12 +125,11 @@ public struct CompicFile: Codable {
         
         self.iconSpan = compic.iconSpan
         
-        if ((compic.compicRequest.info == nil) || (compic.compicRequest.info == true)) {
-            self.name = compic.name
-            self.url = compic.url
-            self.website = compic.website
-            self.countries = compic.countries
-        }
+        self.name = compic.name
+        self.url = compic.url
+        self.website = compic.website
+        self.countries = compic.countries
+        
         if ((compic.compicRequest.colors == nil) || (compic.compicRequest.colors == true)) {
             self.tintColor = compic.tintColor
             self.textColor = compic.textColor

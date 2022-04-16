@@ -29,7 +29,6 @@ public struct CompicRequest: Codable, Equatable {
     public var cardHeight: Int?
     
     public var colors: Bool?
-    public var info: Bool?
     
     public var nvmSecret: String?
     
@@ -58,7 +57,6 @@ public struct CompicRequest: Codable, Equatable {
                 cardHeight: Int? = nil,
                 
                 colors: Bool? = nil,
-                info: Bool? = nil,
                 
                 nvmSecret: String? = nil) {
         self.url = url
@@ -82,7 +80,6 @@ public struct CompicRequest: Codable, Equatable {
         self.cardHeight = cardHeight
         
         self.colors = colors
-        self.info = info
         
         self.nvmSecret = nvmSecret
     }
