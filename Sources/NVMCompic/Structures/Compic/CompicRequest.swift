@@ -22,12 +22,6 @@ public struct CompicRequest: Codable, Equatable {
     public var backgroundWidth: Int?
     public var backgroundHeight: Int?
     
-    public var card: Bool?
-    public var cardFormat: NVMCompic.ImageType?
-    public var cardResizeType: NVMCompic.ResizeType?
-    public var cardWidth: Int?
-    public var cardHeight: Int?
-    
     public var colors: Bool?
     
     public var nvmSecret: String?
@@ -50,12 +44,6 @@ public struct CompicRequest: Codable, Equatable {
                 backgroundWidth: Int? = nil,
                 backgroundHeight: Int? = nil,
                 
-                card: Bool? = nil,
-                cardFormat: NVMCompic.ImageType? = nil,
-                cardResizeType: NVMCompic.ResizeType? = nil,
-                cardWidth: Int? = nil,
-                cardHeight: Int? = nil,
-                
                 colors: Bool? = nil,
                 
                 nvmSecret: String? = nil) {
@@ -72,12 +60,6 @@ public struct CompicRequest: Codable, Equatable {
         self.backgroundResizeType = backgroundResizeType
         self.backgroundWidth = backgroundWidth
         self.backgroundHeight = backgroundHeight
-        
-        self.card = card
-        self.cardFormat = cardFormat
-        self.cardResizeType = cardResizeType
-        self.cardWidth = cardWidth
-        self.cardHeight = cardHeight
         
         self.colors = colors
         
@@ -99,29 +81,6 @@ public struct CompicRequest: Codable, Equatable {
         if let backgroundWidthVar = self.backgroundWidth { uniqueString += "backgroundWidth:" + String(backgroundWidthVar) }
         if let backgroundHeightVar = self.backgroundHeight { uniqueString += "backgroundHeight:" + String(backgroundHeightVar) }
         
-        if let cardVar = self.card { uniqueString += "card:" + String(cardVar) }
-        if let cardFormatVar = self.cardFormat { uniqueString += "cardFormat:" + cardFormatVar.rawValue }
-        if let cardResizeTypeVar = self.cardResizeType { uniqueString += "cardResizeType:" + cardResizeTypeVar.rawValue }
-        if let cardWidthVar = self.cardWidth { uniqueString += "cardWidth:" + String(cardWidthVar) }
-        if let cardHeightVar = self.cardHeight { uniqueString += "cardHeight:" + String(cardHeightVar) }
-        
         return uniqueString
-    }
-}
-
-extension CompicRequest {
-    internal var compicImageType: CompicImage.ImageType? {
-        if ((self.icon == true) && ((self.background == false)) && (self.card == false)) {
-            return .icon
-        }
-        else if ((self.icon == false) && ((self.background == true)) && (self.card == false)) {
-            return .background
-        }
-        else if ((self.icon == false) && ((self.background == false)) && (self.card == true)) {
-            return .card
-        }
-        else {
-            return nil
-        }
     }
 }

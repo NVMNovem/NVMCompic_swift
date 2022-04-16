@@ -25,7 +25,6 @@ public struct Compic: Codable {
     
     public var iconImage: Data?
     public var backgroundImage: Data?
-    public var cardImage: Data?
     
     public var tintColor: String?
     public var textColor: String?
@@ -63,7 +62,6 @@ public struct Compic: Codable {
         
         iconImage = try? container.decode(Data.self, forKey: .iconImage)
         backgroundImage = try? container.decode(Data.self, forKey: .backgroundImage)
-        cardImage = try? container.decode(Data.self, forKey: .cardImage)
         
         tintColor = try? container.decode(String.self, forKey: .tintColor)
         textColor = try? container.decode(String.self, forKey: .textColor)
@@ -93,7 +91,6 @@ public struct Compic: Codable {
                   
                   iconImage: Data?,
                   backgroundImage: Data?,
-                  cardImage: Data?,
     
                   tintColor: String?,
                   textColor: String?,
@@ -122,7 +119,6 @@ public struct Compic: Codable {
         
         self.iconImage = iconImage
         self.backgroundImage = backgroundImage
-        self.cardImage = cardImage
         
         self.tintColor = tintColor
         self.textColor = textColor
@@ -160,14 +156,10 @@ public struct Compic: Codable {
         let compicFileBackground = compicFile.backgroundImages.first(where: { compicImage in
             compicImage.compicRequest == compicRequest
         })?.data
-        let compicFileCard = compicFile.cardImages.first(where: { compicImage in
-            compicImage.compicRequest == compicRequest
-        })?.data
         
-        if ((compicFileIcon != nil) || (compicFileBackground != nil) || (compicFileCard != nil)) {
+        if ((compicFileIcon != nil) || (compicFileBackground != nil)) {
             self.iconImage = compicFileIcon
             self.backgroundImage = compicFileBackground
-            self.cardImage = compicFileCard
         } else {
             self.iconImage = compicFile.iconImages.first(where: { compicImage in
                 compicImage.type == .icon &&
@@ -183,14 +175,6 @@ public struct Compic: Codable {
                 compicImage.height == compicRequest.backgroundHeight &&
                 compicImage.format == compicRequest.backgroundFormat &&
                 compicImage.resizeType == compicRequest.backgroundResizeType
-            })?.data
-            
-            self.cardImage = compicFile.cardImages.first(where: { compicImage in
-                compicImage.type == .card &&
-                compicImage.width == compicRequest.cardWidth &&
-                compicImage.height == compicRequest.cardHeight &&
-                compicImage.format == compicRequest.cardFormat &&
-                compicImage.resizeType == compicRequest.cardResizeType
             })?.data
         }
         
@@ -234,6 +218,6 @@ public struct Compic: Codable {
 
 extension Compic: CustomStringConvertible {
     public var description: String {
-        return "\r  [\(self.objectId)]\r  \r  \(self.name)\r  Url: \(self.url)\r  Website: \(self.website)\r  Countries: \(self.countries)\r  Icon Image: \(String(describing: self.iconImage))\r  Background Image: \(String(describing: self.backgroundImage))\r  Card Image: \(String(describing: self.cardImage))\r\r  Tint Color: \(String(describing: self.tintColor))\r  Text Color: \(String(describing: self.textColor))\r  Background Color: \(String(describing: self.backgroundColor))\r  Button Color: \(String(describing: self.buttonColor))\r  Fill Color: \(String(describing: self.fillColor))\r  Border Color: \(String(describing: self.borderColor))\r  Header Color: \(String(describing: self.headerColor))\r\r  CompicRequest: \(String(describing: self.compicRequest))\r\r  NVMData: \(String(describing: self.nvmData))\r\r  Updated At: \(String(describing: self.updatedAt))\r"
+        return "\r  [\(self.objectId)]\r  \r  \(self.name)\r  Url: \(self.url)\r  Website: \(self.website)\r  Countries: \(self.countries)\r  Icon Image: \(String(describing: self.iconImage))\r  Background Image: \(String(describing: self.backgroundImage))\r\r  Tint Color: \(String(describing: self.tintColor))\r  Text Color: \(String(describing: self.textColor))\r  Background Color: \(String(describing: self.backgroundColor))\r  Button Color: \(String(describing: self.buttonColor))\r  Fill Color: \(String(describing: self.fillColor))\r  Border Color: \(String(describing: self.borderColor))\r  Header Color: \(String(describing: self.headerColor))\r\r  CompicRequest: \(String(describing: self.compicRequest))\r\r  NVMData: \(String(describing: self.nvmData))\r\r  Updated At: \(String(describing: self.updatedAt))\r"
     }
 }

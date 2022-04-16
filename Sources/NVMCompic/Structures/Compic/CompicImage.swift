@@ -19,7 +19,6 @@ public struct CompicImage: Codable {
     public enum ImageType: String, Codable {
         case icon
         case background
-        case card
     }
 }
 

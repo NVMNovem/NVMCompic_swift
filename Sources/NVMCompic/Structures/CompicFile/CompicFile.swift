@@ -25,7 +25,6 @@ public struct CompicFile: Codable {
     
     public var iconImages: [CompicImage]
     public var backgroundImages: [CompicImage]
-    public var cardImages: [CompicImage]
     
     public var tintColor: String?
     public var textColor: String?
@@ -60,7 +59,6 @@ public struct CompicFile: Codable {
         
         self.iconImages = []
         self.backgroundImages = []
-        self.cardImages = []
         
         self.tintColor = compic.tintColor
         self.textColor = compic.textColor
@@ -108,18 +106,6 @@ public struct CompicFile: Codable {
                                                      resizeType: compic.compicRequest.backgroundResizeType,
                                                      width: compic.compicRequest.backgroundWidth,
                                                      height: compic.compicRequest.backgroundHeight))
-        }
-        if let compicCardImage = compic.cardImage {
-            self.cardImages.removeAll { compicImage in
-                compicImage.compicRequest == compic.compicRequest
-            }
-            self.cardImages.append(CompicImage(type: .card,
-                                                     data: compicCardImage,
-                                                     compicRequest: compic.compicRequest,
-                                                     format: compic.compicRequest.cardFormat,
-                                                     resizeType: compic.compicRequest.cardResizeType,
-                                                     width: compic.compicRequest.cardWidth,
-                                                     height: compic.compicRequest.cardHeight))
         }
         
         self.iconSpan = compic.iconSpan
