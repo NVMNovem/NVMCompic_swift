@@ -234,13 +234,13 @@ public struct NVMCompic {
                 print ("NVMCompic Service Unavailable: \(httpResponse.statusCode)")
                 
                 throw NVMCompicError.serviceUnavailable
-            }
-            
-            do {
-                decoder.dateDecodingStrategy = .nvmDateStrategySince1970
-                return try decoder.decode([Compic].self, from: data)
-            } catch let therror {
-                throw therror
+            } else {
+                do {
+                    decoder.dateDecodingStrategy = .nvmDateStrategySince1970
+                    return try decoder.decode([Compic].self, from: data)
+                } catch let therror {
+                    throw therror
+                }
             }
         } else {
             throw NVMCompicError.invalidObject
