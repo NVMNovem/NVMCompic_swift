@@ -94,9 +94,9 @@ public struct CompicFile: Codable {
     
     public mutating func saveCompic(_ compic: Compic) throws {
         if let compicIconImage = compic.iconImage {
-            self.iconImages.removeAll { compicImage in
+            self.iconImages.removeAll(where: { compicImage in
                 compicImage.compicRequest == compic.compicRequest
-            }
+            })
             self.iconImages.append(CompicImage(type: .icon,
                                                data: compicIconImage,
                                                compicRequest: compic.compicRequest,
@@ -106,9 +106,9 @@ public struct CompicFile: Codable {
                                                height: compic.compicRequest.iconHeight))
         }
         if let compicBackgroundImage = compic.backgroundImage {
-            self.backgroundImages.removeAll { compicImage in
+            self.backgroundImages.removeAll(where: { compicImage in
                 compicImage.compicRequest == compic.compicRequest
-            }
+            })
             self.backgroundImages.append(CompicImage(type: .background,
                                                      data: compicBackgroundImage,
                                                      compicRequest: compic.compicRequest,
@@ -119,6 +119,7 @@ public struct CompicFile: Codable {
         }
         
         self.iconSpan = compic.iconSpan
+        self.tileable = compic.tileable
         
         self.name = compic.name
         self.url = compic.url
@@ -133,7 +134,31 @@ public struct CompicFile: Codable {
             self.fillColor = compic.fillColor
             self.borderColor = compic.borderColor
             self.headerColor = compic.headerColor
+        } else {
+            if let compicTintColor = compic.tintColor {
+                self.tintColor = compicTintColor
+            }
+            if let compicTextColor = compic.textColor {
+                self.textColor = compicTextColor
+            }
+            if let compicBackgroundColor = compic.backgroundColor {
+                self.backgroundColor = compicBackgroundColor
+            }
+            if let compicButtonColor = compic.buttonColor {
+                self.buttonColor = compicButtonColor
+            }
+            if let compicFillColor = compic.fillColor {
+                self.fillColor = compicFillColor
+            }
+            if let compicBorderColor = compic.borderColor {
+                self.borderColor = compicBorderColor
+            }
+            if let compicHeaderColor = compic.headerColor {
+                self.headerColor = compicHeaderColor
+            }
         }
+        
+        self.updatedAt = compic.updatedAt
         
         try self.save()
     }

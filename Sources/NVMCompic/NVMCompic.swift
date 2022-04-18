@@ -210,8 +210,6 @@ public struct NVMCompic {
         let headers = ["content-type": "application/json"]
         var body: [CompicRequest] = []
         
-        //Remove duplicates
-        //Try merging requests with same url (mss)
         for var compicRequest in requests {
             if let strippedUrl = compicRequest.url.strippedUrl(keepPrefix: false, keepSuffix: true) {
                 compicRequest.url = strippedUrl
@@ -222,9 +220,6 @@ public struct NVMCompic {
         let requestData = try encoder.encode(body)
         if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [[String : Any]] {
             let finalBody = try JSONSerialization.data(withJSONObject: requestDict)
-            print(" ")
-            print(String(decoding: finalBody, as: UTF8.self))
-            print(" ")
             
             var request = URLRequest(url: URL(string: "https://compic.herokuapp.com/api")!)
             request.httpMethod = "POST"
