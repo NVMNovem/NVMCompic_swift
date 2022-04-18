@@ -230,7 +230,11 @@ public struct NVMCompic {
             
             let (data, response) = try await session.data(for: request)
             
-            print("response: \(response)")
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+                print ("NVMCompic Service Unavailable: \(httpResponse.statusCode)")
+                
+                throw NVMCompicError.serviceUnavailable
+            }
             
             do {
                 decoder.dateDecodingStrategy = .nvmDateStrategySince1970

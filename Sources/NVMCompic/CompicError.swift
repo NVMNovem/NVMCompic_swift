@@ -8,6 +8,7 @@
 import Foundation
 
 enum NVMCompicError: Error {
+    case serviceUnavailable
     case notInitialized
     case invalidObject
 }
@@ -15,6 +16,8 @@ enum NVMCompicError: Error {
 extension NVMCompicError: LocalizedError {
     var errorCode: Int {
         switch self {
+        case .serviceUnavailable:
+            return 1001000
         case .notInitialized:
             return 1001001
         case .invalidObject:
@@ -24,6 +27,11 @@ extension NVMCompicError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
+        case .serviceUnavailable:
+            return NSLocalizedString(
+                "NVMCompic is unavailabe.",
+                comment: ""
+            )
         case .notInitialized:
             return NSLocalizedString(
                 "NVMCompic is not initialized.",
