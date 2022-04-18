@@ -228,7 +228,9 @@ public struct NVMCompic {
             request.allHTTPHeaderFields = headers
             request.httpBody = finalBody
             
-            let (data, _) = try await session.data(for: request)
+            let (data, response) = try await session.data(for: request)
+            
+            print("response: \(response)")
             
             do {
                 decoder.dateDecodingStrategy = .nvmDateStrategySince1970
