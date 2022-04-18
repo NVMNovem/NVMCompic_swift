@@ -14,8 +14,6 @@ public struct CompicFile: Codable {
     public var storedAt: Date
     public var usedAt: Date?
     
-    public var compicRequest: CompicRequest //Moet iets beter zijn om achteraf nog eens dezelfde request te kunnen opstellen voor elk icon, background & card
-    
     public var name: String
     public var url: String
     public var website: String
@@ -49,8 +47,6 @@ public struct CompicFile: Codable {
         self.storedAt = Date()
         self.usedAt = Date()
         
-        self.compicRequest = compic.compicRequest
-        
         self.name = compic.name
         self.url = compic.url
         self.website = compic.website
@@ -71,6 +67,18 @@ public struct CompicFile: Codable {
         self.headerColor = compic.headerColor
         
         try? self.saveCompic(compic)
+    }
+    
+    internal func allRequests() -> [CompicRequest] {
+        var compicRequests: [CompicRequest] = []
+        compicRequests.append(contentsOf: self.iconImages.map({ compicImage in
+            compicImage.compicRequest
+        }))
+        compicRequests.append(contentsOf: self.backgroundImages.map({ compicImage in
+            compicImage.compicRequest
+        }))
+        
+        return compicRequests
     }
     
     internal func save() throws {

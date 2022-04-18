@@ -37,7 +37,7 @@ public struct NVMCompic {
         if compicFiles.count == 1 {
             return compicFiles.first
         } else {
-            return compicFiles.first { $0.compicRequest == request } //TODO: Moet beter
+            return compicFiles.first { $0.allRequests().contains(request) }
         }
     }
     public func getCompics(requests: [CompicRequest]) async throws -> [Compic]? {
@@ -97,28 +97,82 @@ public struct NVMCompic {
         }
     }
     
-    public func checkImages() async throws {
-        print("imageResults: \(try await self.checkImagesResult())")
+    /**
+     This will check all request for updates and download them if needed.
+     
+     - note: This function is meant to be executed on app launch.
+    */
+    public func checkCompics(requests: [CompicRequest]) async throws -> ImageResult {
+        var imageResults: [ImageResult] = []
+        
+        var localCompicFiles: [CompicFile] = []
+        var downloadableRequests: [CompicRequest] = []
+        
+        for request in requests {
+            if let localCompic = try getLocalCompicFile(request) {
+                localCompicFiles.append(localCompic)
+            } else {
+                downloadableRequests.append(request)
+            }
+        }
+        
+        if !localCompicFiles.isEmpty {
+            let imageResult = try await self.updateCompicFiles(localCompicFiles)
+            imageResults.append(imageResult)
+        }
+        if !downloadableRequests.isEmpty {
+            try await self.downloadCompics(requests: downloadableRequests)
+            imageResults.append(.downloaded)
+        }
+        
+        if imageResults.count == 0 {
+            return .none
+        } else if imageResults.count >= 2 {
+            return .both
+        } else {
+            return imageResults.first ?? .none
+        }
     }
     
+    /**
+     This will check all local images and compare them with the cloud.
+    */
+    public func checkImages() async throws {
+        _ = try await self.checkImagesResult()
+    }
+    
+    /**
+     This will check all local images and compare them with the cloud.
+    */
     public func checkImagesResult() async throws -> ImageResult {
         if let localCompics = try? getLocalCompicFiles(nil) {
-            let timeStamps = try await fetchUpdatedAt(localCompics)
+            return try await updateCompicFiles(localCompics)
+        } else {
+            return .none
+        }
+    }
+    
+    public func updateCompicFiles(_ compicFiles: [CompicFile]) async throws -> ImageResult {
+        let timeStamps = try await fetchUpdatedAt(compicFiles)
+        
+        if !compicFiles.isEmpty && !timeStamps.isEmpty {
+            let fetchableCompics = compicFiles.filter { compic in
+                let localCompicTimeStamp = compic.updatedAt
+                if let cloudCompicTimeStamp = timeStamps[compic.url.toFileName] {
+                    return cloudCompicTimeStamp != localCompicTimeStamp
+                } else {
+                    return true
+                }
+            }
             
-            if !localCompics.isEmpty && !timeStamps.isEmpty {
-                let fetchableCompics = localCompics.filter { compic in
-                    let localCompicTimeStamp = compic.updatedAt
-                    if let cloudCompicTimeStamp = timeStamps[compic.url.toFileName] {
-                        return cloudCompicTimeStamp != localCompicTimeStamp
-                    } else {
-                        return true
-                    }
+            if !fetchableCompics.isEmpty {
+                var fetchableCompicsRequests: [CompicRequest] = []
+                for fetchableCompic in fetchableCompics {
+                    fetchableCompicsRequests.append(contentsOf: fetchableCompic.allRequests())
                 }
                 
-                if !fetchableCompics.isEmpty {
-                    let fetchedCompics = try await fetchCompicResults(requests: fetchableCompics.map({ $0.compicRequest }))
-                    try storeCompics(fetchedCompics)
-                    
+                if !fetchableCompicsRequests.isEmpty {
+                    try await downloadCompics(requests: fetchableCompicsRequests)
                     return .updated
                 } else {
                     return .none
@@ -230,10 +284,15 @@ public struct NVMCompic {
         if fileManager.fileExists(atPath: compicFileURL.path) {
             let compicFileData = try Data(contentsOf: compicFileURL)
             var compicFile = try decoder.decode(CompicFile.self, from: compicFileData)
-            compicFile.usedAt = Date()
-            try compicFile.save()
             
-            return compicFile
+            if compicFile.allRequests().contains(request) {
+                compicFile.usedAt = Date()
+                try compicFile.save()
+                
+                return compicFile
+            } else {
+                return nil
+            }
         } else {
             return nil
         }

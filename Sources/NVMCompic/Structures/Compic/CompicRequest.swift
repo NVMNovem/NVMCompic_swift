@@ -7,7 +7,9 @@
 
 import Foundation
 
-public struct CompicRequest: Codable, Equatable {
+public struct CompicRequest: Codable, Equatable, Identifiable {
+    public var id: String { self.getIdentifier() }
+    
     public var url: String
     
     public var icon: Bool?
