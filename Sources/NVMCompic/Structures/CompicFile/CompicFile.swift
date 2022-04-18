@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 public struct CompicFile: Codable {
     public var objectId: String
@@ -25,13 +26,13 @@ public struct CompicFile: Codable {
     public var iconImages: [CompicImage]
     public var backgroundImages: [CompicImage]
     
-    public var tintColor: String?
-    public var textColor: String?
-    public var backgroundColor: String?
-    public var buttonColor: String?
-    public var fillColor: String?
-    public var borderColor: String?
-    public var headerColor: String?
+    public var tintColor: Color?
+    public var textColor: Color?
+    public var backgroundColor: Color?
+    public var buttonColor: Color?
+    public var fillColor: Color?
+    public var borderColor: Color?
+    public var headerColor: Color?
     
     /**
      JSON Data of specific Novem variables
@@ -39,6 +40,35 @@ public struct CompicFile: Codable {
      - warning: U need a secret key to access this variable.
      */
     public var nvmData: Data?
+    
+    enum CodingKeys: String, CodingKey {
+        case objectId
+        case updatedAt
+        
+        case storedAt
+        case usedAt
+        
+        case name
+        case url
+        case website
+        case countries
+        
+        case iconSpan
+        case tileable
+        
+        case iconImage
+        case backgroundImage
+        
+        case tintColor
+        case textColor
+        case backgroundColor
+        case buttonColor
+        case fillColor
+        case borderColor
+        case headerColor
+        
+        case nvmData
+    }
     
     public init(compic: Compic) {
         self.objectId = compic.objectId
@@ -161,6 +191,71 @@ public struct CompicFile: Codable {
         self.updatedAt = compic.updatedAt
         
         try self.save()
+    }
+}
+
+extension CompicFile: Encodable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(objectId, forKey: .objectId)
+        try container.encode(updatedAt, forKey: .updatedAt)
+        
+        try container.encode(storedAt, forKey: .storedAt)
+        try? container.encode(usedAt, forKey: .usedAt)
+        
+        try container.encode(name, forKey: .name)
+        try container.encode(url, forKey: .url)
+        try container.encode(website, forKey: .website)
+        try container.encode(countries, forKey: .countries)
+        
+        try container.encode(iconSpan, forKey: .iconSpan)
+        try container.encode(tileable, forKey: .tileable)
+        
+        try? container.encode(iconImages, forKey: .iconImages)
+        try? container.encode(backgroundImages, forKey: .backgroundImages)
+        
+        try? container.encode(tintColor.hex, forKey: .tintColor)
+        try? container.encode(textColor.hex, forKey: .textColor)
+        try? container.encode(backgroundColor.hex, forKey: .backgroundColor)
+        try? container.encode(buttonColor.hex, forKey: .buttonColor)
+        try? container.encode(fillColor.hex, forKey: .fillColor)
+        try? container.encode(borderColor.hex, forKey: .borderColor)
+        try? container.encode(headerColor.hex, forKey: .headerColor)
+        
+        try? container.encode(nvmData, forKey: .nvmData)
+    }
+}
+extension CompicFile: Decodable {
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        
+        objectId = try values.decode(String.self, forKey: .objectId)
+        updatedAt = try values.decode(Date.self, forKey: .updatedAt)
+        
+        storedAt = try values.decode(Date.self, forKey: .storedAt)
+        usedAt = try? values.decode(Date.self, forKey: .usedAt)
+        
+        name = try values.decode(String.self, forKey: .name)
+        url = try values.decode(String.self, forKey: .url)
+        website = try values.decode(String.self, forKey: .website)
+        countries = try values.decode([String].self, forKey: .countries)
+        
+        iconSpan = try values.decode(Int.self, forKey: .iconSpan)
+        tileable = try values.decode(Bool.self, forKey: .tileable)
+        
+        iconImages = try? values.decode([CompicImage].self, forKey: .iconImages)
+        backgroundImages = try? values.decode([CompicImage].self, forKey: .backgroundImages)
+        
+        tintColor = Color(hex: try? values.decode(String.self, forKey: .tintColor))
+        textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
+        backgroundColor = Color(hex: try? values.decode(String.self, forKey: .backgroundColor))
+        buttonColor = Color(hex: try? values.decode(String.self, forKey: .buttonColor))
+        fillColor = Color(hex: try? values.decode(String.self, forKey: .fillColor))
+        borderColor = Color(hex: try? values.decode(String.self, forKey: .borderColor))
+        headerColor = Color(hex: try? values.decode(String.self, forKey: .headerColor))
+        
+        nvmData = try? values.decode(Data.self, forKey: .nvmData)
     }
 }
 

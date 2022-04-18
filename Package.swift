@@ -15,6 +15,7 @@ let package = Package(
             targets: ["NVMCompic"]),
     ],
     dependencies: [
+        .package(name: "NVMColor", url: "https://github.com/NVMNovem/NVMColor_swift", from: "1.0.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.

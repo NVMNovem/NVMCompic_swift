@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 public struct Compic: Codable {
     public var objectId: String
@@ -27,13 +28,13 @@ public struct Compic: Codable {
     public var iconImage: Data?
     public var backgroundImage: Data?
     
-    public var tintColor: String?
-    public var textColor: String?
-    public var backgroundColor: String?
-    public var buttonColor: String?
-    public var fillColor: String?
-    public var borderColor: String?
-    public var headerColor: String?
+    public var tintColor: Color?
+    public var textColor: Color?
+    public var backgroundColor: Color?
+    public var buttonColor: Color?
+    public var fillColor: Color?
+    public var borderColor: Color?
+    public var headerColor: Color?
     
     /**
      JSON Data of specific Novem variables
@@ -41,6 +42,37 @@ public struct Compic: Codable {
      - warning: U need a secret key to access this variable.
      */
     public var nvmData: Data?
+    
+    enum CodingKeys: String, CodingKey {
+        case objectId
+        case updatedAt
+        
+        case storedAt
+        case usedAt
+        
+        case compicRequest
+        
+        case name
+        case url
+        case website
+        case countries
+        
+        case iconSpan
+        case tileable
+        
+        case iconImage
+        case backgroundImage
+        
+        case tintColor
+        case textColor
+        case backgroundColor
+        case buttonColor
+        case fillColor
+        case borderColor
+        case headerColor
+        
+        case nvmData
+    }
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -65,13 +97,13 @@ public struct Compic: Codable {
         iconImage = try? container.decode(Data.self, forKey: .iconImage)
         backgroundImage = try? container.decode(Data.self, forKey: .backgroundImage)
         
-        tintColor = try? container.decode(String.self, forKey: .tintColor)
-        textColor = try? container.decode(String.self, forKey: .textColor)
-        backgroundColor = try? container.decode(String.self, forKey: .backgroundColor)
-        buttonColor = try? container.decode(String.self, forKey: .buttonColor)
-        fillColor = try? container.decode(String.self, forKey: .fillColor)
-        borderColor = try? container.decode(String.self, forKey: .borderColor)
-        headerColor = try? container.decode(String.self, forKey: .headerColor)
+        tintColor = Color(hex: try? container.decode(String.self, forKey: .tintColor))
+        textColor = Color(hex: try? container.decode(String.self, forKey: .textColor))
+        backgroundColor = Color(hex: try? container.decode(String.self, forKey: .backgroundColor))
+        buttonColor = Color(hex: try? container.decode(String.self, forKey: .buttonColor))
+        fillColor = Color(hex: try? container.decode(String.self, forKey: .fillColor))
+        borderColor = Color(hex: try? container.decode(String.self, forKey: .borderColor))
+        headerColor = Color(hex: try? container.decode(String.self, forKey: .headerColor))
         
         nvmData = try? container.decode(Data.self, forKey: .nvmData)
     }
@@ -95,13 +127,13 @@ public struct Compic: Codable {
                   iconImage: Data?,
                   backgroundImage: Data?,
     
-                  tintColor: String?,
-                  textColor: String?,
-                  backgroundColor: String?,
-                  buttonColor: String?,
-                  fillColor: String?,
-                  borderColor: String?,
-                  headerColor: String?,
+                  tintColor: Color?,
+                  textColor: Color?,
+                  backgroundColor: Color?,
+                  buttonColor: Color?,
+                  fillColor: Color?,
+                  borderColor: Color?,
+                  headerColor: Color?,
     
                   nvmData: Data?) {
         
@@ -220,9 +252,77 @@ public struct Compic: Codable {
     }
 }
 
+extension Compic: Encodable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(objectId, forKey: .objectId)
+        try container.encode(updatedAt, forKey: .updatedAt)
+        
+        try container.encode(storedAt, forKey: .storedAt)
+        try? container.encode(usedAt, forKey: .usedAt)
+        
+        try container.encode(compicRequest, forKey: .compicRequest)
+        
+        try container.encode(name, forKey: .name)
+        try container.encode(url, forKey: .url)
+        try container.encode(website, forKey: .website)
+        try container.encode(countries, forKey: .countries)
+        
+        try container.encode(iconSpan, forKey: .iconSpan)
+        try container.encode(tileable, forKey: .tileable)
+        
+        try? container.encode(iconImage, forKey: .iconImage)
+        try? container.encode(backgroundImage, forKey: .backgroundImage)
+        
+        try? container.encode(tintColor.hex, forKey: .tintColor)
+        try? container.encode(textColor.hex, forKey: .textColor)
+        try? container.encode(backgroundColor.hex, forKey: .backgroundColor)
+        try? container.encode(buttonColor.hex, forKey: .buttonColor)
+        try? container.encode(fillColor.hex, forKey: .fillColor)
+        try? container.encode(borderColor.hex, forKey: .borderColor)
+        try? container.encode(headerColor.hex, forKey: .headerColor)
+        
+        try? container.encode(nvmData, forKey: .nvmData)
+    }
+}
+extension Compic: Decodable {
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        
+        objectId = try values.decode(String.self, forKey: .objectId)
+        updatedAt = try values.decode(Date.self, forKey: .updatedAt)
+        
+        storedAt = try values.decode(Date.self, forKey: .storedAt)
+        usedAt = try? values.decode(Date.self, forKey: .usedAt)
+        
+        compicRequest = try values.decode(CompicRequest.self, forKey: .compicRequest)
+        
+        name = try values.decode(String.self, forKey: .name)
+        url = try values.decode(String.self, forKey: .url)
+        website = try values.decode(String.self, forKey: .website)
+        countries = try values.decode([String].self, forKey: .countries)
+        
+        iconSpan = try values.decode(Int.self, forKey: .iconSpan)
+        tileable = try values.decode(Bool.self, forKey: .tileable)
+        
+        iconImage = try? values.decode(Data.self, forKey: .iconImage)
+        backgroundImage = try? values.decode(Data.self, forKey: .backgroundImage)
+        
+        tintColor = Color(hex: try? values.decode(String.self, forKey: .tintColor))
+        textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
+        backgroundColor = Color(hex: try? values.decode(String.self, forKey: .backgroundColor))
+        buttonColor = Color(hex: try? values.decode(String.self, forKey: .buttonColor))
+        fillColor = Color(hex: try? values.decode(String.self, forKey: .fillColor))
+        borderColor = Color(hex: try? values.decode(String.self, forKey: .borderColor))
+        headerColor = Color(hex: try? values.decode(String.self, forKey: .headerColor))
+        
+        nvmData = try? values.decode(Data.self, forKey: .nvmData)
+    }
+}
 
 extension Compic: CustomStringConvertible {
     public var description: String {
-        return "\r  [\(self.objectId)]\r  \r  \(self.name)\r  Url: \(self.url)\r  Website: \(self.website)\r  Countries: \(self.countries)\r  Icon Image: \(String(describing: self.iconImage))\r  Background Image: \(String(describing: self.backgroundImage))\r\r  Tint Color: \(String(describing: self.tintColor))\r  Text Color: \(String(describing: self.textColor))\r  Background Color: \(String(describing: self.backgroundColor))\r  Button Color: \(String(describing: self.buttonColor))\r  Fill Color: \(String(describing: self.fillColor))\r  Border Color: \(String(describing: self.borderColor))\r  Header Color: \(String(describing: self.headerColor))\r\r  CompicRequest: \(String(describing: self.compicRequest))\r\r  NVMData: \(String(describing: self.nvmData))\r\r  Updated At: \(String(describing: self.updatedAt))\r"
+        return "\r  [\(self.objectId)]\r  \r  \(self.name)\r  Url: \(self.url)\r  Website: \(self.website)\r  Countries: \(self.countries)\r  Icon Image: \(String(describing: self.iconImage))\r  Background Image: \(String(describing: self.backgroundImage))\r\r  CompicRequest: \(String(describing: self.compicRequest))\r\r  NVMData: \(String(describing: self.nvmData))\r\r  Updated At: \(String(describing: self.updatedAt))\r"
     }
 }
