@@ -221,6 +221,9 @@ public struct NVMCompic {
         
         let requestData = try encoder.encode(body)
         if let requestDict = try JSONSerialization.jsonObject(with: requestData, options: .allowFragments) as? [[String : Any]] {
+            print(" ")
+            print(requestDict)
+            print(" ")
             let finalBody = try JSONSerialization.data(withJSONObject: requestDict)
             
             var request = URLRequest(url: URL(string: "https://compic.herokuapp.com/api")!)
