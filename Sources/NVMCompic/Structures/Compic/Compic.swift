@@ -7,8 +7,9 @@
 
 import Foundation
 import SwiftUI
+import NVMColor
 
-public struct Compic: Codable {
+public struct Compic {
     public var objectId: String
     public var updatedAt: Date
     
@@ -72,40 +73,6 @@ public struct Compic: Codable {
         case headerColor
         
         case nvmData
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        objectId = try container.decode(String.self, forKey: .objectId)
-        updatedAt = try container.decode(Date.self, forKey: .updatedAt)
-        
-        do { storedAt = try container.decode(Date.self, forKey: .storedAt) }
-        catch { storedAt = Date() }
-        usedAt = try? container.decode(Date.self, forKey: .usedAt)
-        
-        compicRequest = try container.decode(CompicRequest.self, forKey: .compicRequest)
-        
-        name = try container.decode(String.self, forKey: .name)
-        url = try container.decode(String.self, forKey: .url)
-        website = try container.decode(String.self, forKey: .website)
-        countries = try container.decode([String].self, forKey: .countries)
-        
-        iconSpan = try container.decode(Int.self, forKey: .iconSpan)
-        tileable = try container.decode(Bool.self, forKey: .tileable)
-        
-        iconImage = try? container.decode(Data.self, forKey: .iconImage)
-        backgroundImage = try? container.decode(Data.self, forKey: .backgroundImage)
-        
-        tintColor = Color(hex: try? container.decode(String.self, forKey: .tintColor))
-        textColor = Color(hex: try? container.decode(String.self, forKey: .textColor))
-        backgroundColor = Color(hex: try? container.decode(String.self, forKey: .backgroundColor))
-        buttonColor = Color(hex: try? container.decode(String.self, forKey: .buttonColor))
-        fillColor = Color(hex: try? container.decode(String.self, forKey: .fillColor))
-        borderColor = Color(hex: try? container.decode(String.self, forKey: .borderColor))
-        headerColor = Color(hex: try? container.decode(String.self, forKey: .headerColor))
-        
-        nvmData = try? container.decode(Data.self, forKey: .nvmData)
     }
     
     internal init(objectId: String,
@@ -275,13 +242,13 @@ extension Compic: Encodable {
         try? container.encode(iconImage, forKey: .iconImage)
         try? container.encode(backgroundImage, forKey: .backgroundImage)
         
-        try? container.encode(tintColor.hex, forKey: .tintColor)
-        try? container.encode(textColor.hex, forKey: .textColor)
-        try? container.encode(backgroundColor.hex, forKey: .backgroundColor)
-        try? container.encode(buttonColor.hex, forKey: .buttonColor)
-        try? container.encode(fillColor.hex, forKey: .fillColor)
-        try? container.encode(borderColor.hex, forKey: .borderColor)
-        try? container.encode(headerColor.hex, forKey: .headerColor)
+        try? container.encode(tintColor?.hex, forKey: .tintColor)
+        try? container.encode(textColor?.hex, forKey: .textColor)
+        try? container.encode(backgroundColor?.hex, forKey: .backgroundColor)
+        try? container.encode(buttonColor?.hex, forKey: .buttonColor)
+        try? container.encode(fillColor?.hex, forKey: .fillColor)
+        try? container.encode(borderColor?.hex, forKey: .borderColor)
+        try? container.encode(headerColor?.hex, forKey: .headerColor)
         
         try? container.encode(nvmData, forKey: .nvmData)
     }
@@ -293,7 +260,8 @@ extension Compic: Decodable {
         objectId = try values.decode(String.self, forKey: .objectId)
         updatedAt = try values.decode(Date.self, forKey: .updatedAt)
         
-        storedAt = try values.decode(Date.self, forKey: .storedAt)
+        do { storedAt = try values.decode(Date.self, forKey: .storedAt) }
+        catch { storedAt = Date() }
         usedAt = try? values.decode(Date.self, forKey: .usedAt)
         
         compicRequest = try values.decode(CompicRequest.self, forKey: .compicRequest)

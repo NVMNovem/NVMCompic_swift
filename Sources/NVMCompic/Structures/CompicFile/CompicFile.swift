@@ -7,8 +7,9 @@
 
 import Foundation
 import SwiftUI
+import NVMColor
 
-public struct CompicFile: Codable {
+public struct CompicFile {
     public var objectId: String
     public var updatedAt: Date
     
@@ -56,8 +57,8 @@ public struct CompicFile: Codable {
         case iconSpan
         case tileable
         
-        case iconImage
-        case backgroundImage
+        case iconImages
+        case backgroundImages
         
         case tintColor
         case textColor
@@ -215,13 +216,13 @@ extension CompicFile: Encodable {
         try? container.encode(iconImages, forKey: .iconImages)
         try? container.encode(backgroundImages, forKey: .backgroundImages)
         
-        try? container.encode(tintColor.hex, forKey: .tintColor)
-        try? container.encode(textColor.hex, forKey: .textColor)
-        try? container.encode(backgroundColor.hex, forKey: .backgroundColor)
-        try? container.encode(buttonColor.hex, forKey: .buttonColor)
-        try? container.encode(fillColor.hex, forKey: .fillColor)
-        try? container.encode(borderColor.hex, forKey: .borderColor)
-        try? container.encode(headerColor.hex, forKey: .headerColor)
+        try? container.encode(tintColor?.hex, forKey: .tintColor)
+        try? container.encode(textColor?.hex, forKey: .textColor)
+        try? container.encode(backgroundColor?.hex, forKey: .backgroundColor)
+        try? container.encode(buttonColor?.hex, forKey: .buttonColor)
+        try? container.encode(fillColor?.hex, forKey: .fillColor)
+        try? container.encode(borderColor?.hex, forKey: .borderColor)
+        try? container.encode(headerColor?.hex, forKey: .headerColor)
         
         try? container.encode(nvmData, forKey: .nvmData)
     }
@@ -244,8 +245,8 @@ extension CompicFile: Decodable {
         iconSpan = try values.decode(Int.self, forKey: .iconSpan)
         tileable = try values.decode(Bool.self, forKey: .tileable)
         
-        iconImages = try? values.decode([CompicImage].self, forKey: .iconImages)
-        backgroundImages = try? values.decode([CompicImage].self, forKey: .backgroundImages)
+        iconImages = (try? values.decode([CompicImage].self, forKey: .iconImages)) ?? []
+        backgroundImages = (try? values.decode([CompicImage].self, forKey: .backgroundImages)) ?? []
         
         tintColor = Color(hex: try? values.decode(String.self, forKey: .tintColor))
         textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
