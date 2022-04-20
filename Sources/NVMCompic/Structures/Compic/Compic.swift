@@ -264,6 +264,7 @@ extension Compic: Decodable {
         catch { storedAt = Date() }
         usedAt = try? values.decode(Date.self, forKey: .usedAt)
         
+        print("compicRequestString: \(try values.decode(CompicRequest.self, forKey: .compicRequest))")
         compicRequest = try values.decode(CompicRequest.self, forKey: .compicRequest)
         
         name = try values.decode(String.self, forKey: .name)
