@@ -277,6 +277,8 @@ extension Compic: Decodable {
         iconImage = try? values.decode(Data.self, forKey: .iconImage)
         backgroundImage = try? values.decode(Data.self, forKey: .backgroundImage)
         
+        print("tintColorString: \(String(describing: try? values.decode(String.self, forKey: .tintColor)))")
+        print("tintColorColor: \(String(describing: Color(hex: try? values.decode(String.self, forKey: .tintColor))))")
         tintColor = Color(hex: try? values.decode(String.self, forKey: .tintColor))
         textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
         backgroundColor = Color(hex: try? values.decode(String.self, forKey: .backgroundColor))
