@@ -260,7 +260,9 @@ extension Compic: Decodable {
         objectId = try values.decode(String.self, forKey: .objectId)
         updatedAt = try values.decode(Date.self, forKey: .updatedAt)
         
-        tintColor = Color(hex: try values.decode(String.self, forKey: .tintColor))
+        
+        print("tintColorString: \(String(describing: try? values.decode(String.self, forKey: .tintColor)))")
+        tintColor = Color(hex: try? values.decode(String.self, forKey: .tintColor))
         
         do { storedAt = try values.decode(Date.self, forKey: .storedAt) }
         catch { storedAt = Date() }
