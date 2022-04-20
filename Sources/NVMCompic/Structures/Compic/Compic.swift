@@ -264,7 +264,6 @@ extension Compic: Decodable {
         catch { storedAt = Date() }
         usedAt = try? values.decode(Date.self, forKey: .usedAt)
         
-        print("compicRequestString: \(try values.decode(CompicRequest.self, forKey: .compicRequest))")
         compicRequest = try values.decode(CompicRequest.self, forKey: .compicRequest)
         
         name = try values.decode(String.self, forKey: .name)
@@ -278,8 +277,6 @@ extension Compic: Decodable {
         iconImage = try? values.decode(Data.self, forKey: .iconImage)
         backgroundImage = try? values.decode(Data.self, forKey: .backgroundImage)
         
-        print("tintColorString: \(String(describing: try values.decode(String.self, forKey: .tintColor)))")
-        print("tintColorColor: \(String(describing: Color(hex: try values.decode(String.self, forKey: .tintColor))))")
         tintColor = Color(hex: try values.decode(String.self, forKey: .tintColor))
         textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
         backgroundColor = Color(hex: try? values.decode(String.self, forKey: .backgroundColor))
