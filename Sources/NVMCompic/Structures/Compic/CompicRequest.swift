@@ -7,8 +7,8 @@
 
 import Foundation
 
-public struct CompicRequest: Codable, Equatable {
-    //public var id: String { self.getIdentifier() }
+public struct CompicRequest: Codable, Equatable, Identifiable {
+    public var id: String { self.getIdentifier() }
     
     public var url: String
     

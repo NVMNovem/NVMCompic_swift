@@ -260,6 +260,8 @@ extension Compic: Decodable {
         objectId = try values.decode(String.self, forKey: .objectId)
         updatedAt = try values.decode(Date.self, forKey: .updatedAt)
         
+        tintColor = Color(hex: try values.decode(String.self, forKey: .tintColor))
+        
         do { storedAt = try values.decode(Date.self, forKey: .storedAt) }
         catch { storedAt = Date() }
         usedAt = try? values.decode(Date.self, forKey: .usedAt)
@@ -276,8 +278,6 @@ extension Compic: Decodable {
         
         iconImage = try? values.decode(Data.self, forKey: .iconImage)
         backgroundImage = try? values.decode(Data.self, forKey: .backgroundImage)
-        
-        tintColor = Color(hex: try values.decode(String.self, forKey: .tintColor))
         textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
         backgroundColor = Color(hex: try? values.decode(String.self, forKey: .backgroundColor))
         buttonColor = Color(hex: try? values.decode(String.self, forKey: .buttonColor))
