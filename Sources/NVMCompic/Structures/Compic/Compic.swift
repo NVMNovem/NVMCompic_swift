@@ -242,7 +242,7 @@ extension Compic: Encodable {
         try? container.encode(iconImage, forKey: .iconImage)
         try? container.encode(backgroundImage, forKey: .backgroundImage)
         
-        try? container.encode(tintColor, forKey: .tintColor)
+        try? container.encode(tintColor?.hex, forKey: .tintColor)
         try? container.encode(textColor?.hex, forKey: .textColor)
         try? container.encode(backgroundColor?.hex, forKey: .backgroundColor)
         try? container.encode(buttonColor?.hex, forKey: .buttonColor)
@@ -277,9 +277,9 @@ extension Compic: Decodable {
         iconImage = try? values.decode(Data.self, forKey: .iconImage)
         backgroundImage = try? values.decode(Data.self, forKey: .backgroundImage)
         
-        print("tintColorString: \(String(describing: try? values.decode(String.self, forKey: .tintColor)))")
-        print("tintColorColor: \(String(describing: Color(hex: try? values.decode(String.self, forKey: .tintColor))))")
-        tintColor = Color(hex: try? values.decode(String.self, forKey: .tintColor))
+        print("tintColorString: \(String(describing: try values.decode(String.self, forKey: .tintColor)))")
+        print("tintColorColor: \(String(describing: Color(hex: try values.decode(String.self, forKey: .tintColor))))")
+        tintColor = Color(hex: try values.decode(String.self, forKey: .tintColor))
         textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
         backgroundColor = Color(hex: try? values.decode(String.self, forKey: .backgroundColor))
         buttonColor = Color(hex: try? values.decode(String.self, forKey: .buttonColor))
