@@ -257,6 +257,8 @@ extension Compic: Decodable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         
+        compicRequest = try values.decode(CompicRequest.self, forKey: .compicRequest)
+        
         objectId = try values.decode(String.self, forKey: .objectId)
         updatedAt = try values.decode(Date.self, forKey: .updatedAt)
         
@@ -267,8 +269,6 @@ extension Compic: Decodable {
         do { storedAt = try values.decode(Date.self, forKey: .storedAt) }
         catch { storedAt = Date() }
         usedAt = try? values.decode(Date.self, forKey: .usedAt)
-        
-        compicRequest = try values.decode(CompicRequest.self, forKey: .compicRequest)
         
         name = try values.decode(String.self, forKey: .name)
         url = try values.decode(String.self, forKey: .url)
