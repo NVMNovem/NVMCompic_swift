@@ -242,7 +242,7 @@ extension Compic: Encodable {
         try? container.encode(iconImage, forKey: .iconImage)
         try? container.encode(backgroundImage, forKey: .backgroundImage)
         
-        try? container.encode(tintColor?.hex, forKey: .tintColor)
+        try? container.encode(tintColor, forKey: .tintColor)
         try? container.encode(textColor?.hex, forKey: .textColor)
         try? container.encode(backgroundColor?.hex, forKey: .backgroundColor)
         try? container.encode(buttonColor?.hex, forKey: .buttonColor)
