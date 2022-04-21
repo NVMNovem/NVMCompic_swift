@@ -257,18 +257,14 @@ extension Compic: Decodable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         
-        compicRequest = try values.decode(CompicRequest.self, forKey: .compicRequest)
-        
         objectId = try values.decode(String.self, forKey: .objectId)
         updatedAt = try values.decode(Date.self, forKey: .updatedAt)
-        
-        
-        print("tintColorString: \(String(describing: try? values.decode(String.self, forKey: .tintColor)))")
-        tintColor = Color(hex: try? values.decode(String.self, forKey: .tintColor))
         
         do { storedAt = try values.decode(Date.self, forKey: .storedAt) }
         catch { storedAt = Date() }
         usedAt = try? values.decode(Date.self, forKey: .usedAt)
+        
+        compicRequest = try values.decode(CompicRequest.self, forKey: .compicRequest)
         
         name = try values.decode(String.self, forKey: .name)
         url = try values.decode(String.self, forKey: .url)
@@ -280,12 +276,14 @@ extension Compic: Decodable {
         
         iconImage = try? values.decode(Data.self, forKey: .iconImage)
         backgroundImage = try? values.decode(Data.self, forKey: .backgroundImage)
-        textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
-        backgroundColor = Color(hex: try? values.decode(String.self, forKey: .backgroundColor))
-        buttonColor = Color(hex: try? values.decode(String.self, forKey: .buttonColor))
-        fillColor = Color(hex: try? values.decode(String.self, forKey: .fillColor))
-        borderColor = Color(hex: try? values.decode(String.self, forKey: .borderColor))
-        headerColor = Color(hex: try? values.decode(String.self, forKey: .headerColor))
+        
+        tintColor = Color(hex: try values.decode(String.self, forKey: .tintColor))
+        textColor = Color(hex: try values.decode(String.self, forKey: .textColor))
+        backgroundColor = Color(hex: try values.decode(String.self, forKey: .backgroundColor))
+        buttonColor = Color(hex: try values.decode(String.self, forKey: .buttonColor))
+        fillColor = Color(hex: try values.decode(String.self, forKey: .fillColor))
+        borderColor = Color(hex: try values.decode(String.self, forKey: .borderColor))
+        headerColor = Color(hex: try values.decode(String.self, forKey: .headerColor))
         
         nvmData = try? values.decode(Data.self, forKey: .nvmData)
     }
