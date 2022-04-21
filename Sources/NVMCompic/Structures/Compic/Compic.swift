@@ -277,13 +277,13 @@ extension Compic: Decodable {
         iconImage = try? values.decode(Data.self, forKey: .iconImage)
         backgroundImage = try? values.decode(Data.self, forKey: .backgroundImage)
         
-        tintColor = Color(hex: try values.decode(String.self, forKey: .tintColor))
-        textColor = Color(hex: try values.decode(String.self, forKey: .textColor))
-        backgroundColor = Color(hex: try values.decode(String.self, forKey: .backgroundColor))
-        buttonColor = Color(hex: try values.decode(String.self, forKey: .buttonColor))
-        fillColor = Color(hex: try values.decode(String.self, forKey: .fillColor))
-        borderColor = Color(hex: try values.decode(String.self, forKey: .borderColor))
-        headerColor = Color(hex: try values.decode(String.self, forKey: .headerColor))
+        tintColor = Color(hex: try? values.decode(String.self, forKey: .tintColor))
+        textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
+        backgroundColor = Color(hex: try? values.decode(String.self, forKey: .backgroundColor))
+        buttonColor = Color(hex: try? values.decode(String.self, forKey: .buttonColor))
+        fillColor = Color(hex: try? values.decode(String.self, forKey: .fillColor))
+        borderColor = Color(hex: try? values.decode(String.self, forKey: .borderColor))
+        headerColor = Color(hex: try? values.decode(String.self, forKey: .headerColor))
         
         nvmData = try? values.decode(Data.self, forKey: .nvmData)
     }
