@@ -45,7 +45,7 @@ public struct NVMCompic {
         var fetchableCompicRequests: [CompicRequest] = []
         
         for request in requests {
-            if let localCompicFile = try getLocalCompicFile(request)?.compic(request: request) {
+            if let localCompicFile = try getLocalCompicFile(request: request)?.compic(request: request) {
                 allCompicFiles.append(localCompicFile)
             } else {
                 fetchableCompicRequests.append(request)
@@ -73,7 +73,7 @@ public struct NVMCompic {
         var fetchableCompicRequests: [CompicRequest] = []
         
         for request in requests {
-            if let localCompicFile = try getLocalCompicFile(request) {
+            if let localCompicFile = try getLocalCompicFile(request: request) {
                 allCompicFiles.append(localCompicFile)
             } else {
                 fetchableCompicRequests.append(request)
@@ -109,7 +109,7 @@ public struct NVMCompic {
         var downloadableRequests: [CompicRequest] = []
         
         for request in requests {
-            if let localCompic = try getLocalCompicFile(request) {
+            if let localCompic = try getLocalCompicFile(request: request) {
                 localCompicFiles.append(localCompic)
             } else {
                 downloadableRequests.append(request)
@@ -145,7 +145,7 @@ public struct NVMCompic {
      This will check all local images and compare them with the cloud.
     */
     public func checkImagesResult() async throws -> ImageResult {
-        if let localCompics = try? getLocalCompicFiles(nil) {
+        if let localCompics = try? getLocalCompicFiles(requests: nil) {
             return try await updateCompicFiles(localCompics)
         } else {
             return .none
@@ -273,40 +273,126 @@ public struct NVMCompic {
     
     
     public func getLocalCompic(_ request: CompicRequest) throws -> Compic? {
-        guard let localCompicFile = try self.getLocalCompicFile(request) else { return nil }
+        guard let localCompicFile = try self.getLocalCompicFile(request: request) else { return nil }
         
         return localCompicFile.compic(request: request)
     }
     
-    public func getLocalCompicFile(_ request: CompicRequest) throws -> CompicFile? {
+    /**
+     Use this to return a **CompicFile** based on the url.
+     
+     - Returns: A CompicFile if a CompicFile has been found wich mathes the url.
+     */
+    public func getLocalCompicFile(url: String) throws -> CompicFile? {
+        guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
+        guard let strippedUrl = url.strippedUrl(keepPrefix: false, keepSuffix: true) else { return nil }
+        
+        decoder.dateDecodingStrategy = .nvmDateStrategySince1970
+        
+        let compicFileURL = compicPath.appendingPathComponent(strippedUrl.toFileName)
+        
+        if fileManager.fileExists(atPath: compicFileURL.path) {
+            let compicFileData = try Data(contentsOf: compicFileURL)
+            var compicFile = try decoder.decode(CompicFile.self, from: compicFileData)
+            
+            compicFile.usedAt = Date()
+            try compicFile.save()
+            
+            return compicFile
+        } else {
+            return nil
+        }
+    }
+    /**
+     Use this to return a **CompicFile** only if it contains the request.
+     
+     - Returns: A CompicFile if a CompicFile has been found wich contains the request. Returns nil if no match is found.
+     */
+    public func getLocalCompicFile(request: CompicRequest) throws -> CompicFile? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
         
         decoder.dateDecodingStrategy = .nvmDateStrategySince1970
         
         let compicFileURL = compicPath.appendingPathComponent(request.url.toFileName)
         
-        print(1)
         if fileManager.fileExists(atPath: compicFileURL.path) {
             let compicFileData = try Data(contentsOf: compicFileURL)
             var compicFile = try decoder.decode(CompicFile.self, from: compicFileData)
             
-            print(2)
             if compicFile.allRequests().contains(request) {
-                print(3)
                 compicFile.usedAt = Date()
                 try compicFile.save()
                 
                 return compicFile
             } else {
-                
-                print(4)
                 return nil
             }
         } else {
             return nil
         }
     }
-    public func getLocalCompicFiles(_ requests: [CompicRequest]?) throws -> [CompicFile]? {
+    
+    /**
+     Use this to return a collection of **CompicFile**s based on the urls.
+     
+     - Returns: A CompicFile collection if a CompicFile has been found wich mathes the url.
+                Returns all local CompicFiles if no urls are given.
+     */
+    public func getLocalCompicFiles(urls: [String]?) throws -> [CompicFile]? {
+        guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
+        
+        decoder.dateDecodingStrategy = .nvmDateStrategySince1970
+        
+        if let urls = urls {
+            var compicFiles: [CompicFile] = []
+            for url in urls {
+                if let strippedUrl = url.strippedUrl(keepPrefix: false, keepSuffix: true) {
+                    let compicURL = compicPath.appendingPathComponent(strippedUrl.toFileName)
+                    
+                    if fileManager.fileExists(atPath: compicPath.path) {
+                        let compicData = try Data(contentsOf: compicURL)
+                        var compicFile = try decoder.decode(CompicFile.self, from: compicData)
+                        
+                        compicFile.usedAt = Date()
+                        try compicFile.save()
+                        
+                        compicFiles.append(compicFile)
+                    }
+                }
+            }
+            
+            if !compicFiles.isEmpty {
+                return compicFiles
+            } else {
+                return nil
+            }
+        } else {
+            if let localCompicFilesFilenames = try? fileManager.contentsOfDirectory(atPath: compicPath.path) {
+                var localCompicFiles: [CompicFile] = []
+                for localCompicFileFilename in localCompicFilesFilenames {
+                    let localCompicURL = compicPath.appendingPathComponent(localCompicFileFilename)
+                    let data: Data = try Data(contentsOf: localCompicURL)
+                    let localCompicFile = try decoder.decode(CompicFile.self, from: data)
+                    localCompicFiles.append(localCompicFile)
+                }
+                
+                if !localCompicFiles.isEmpty {
+                    return localCompicFiles
+                } else {
+                    return nil
+                }
+            } else {
+                return nil
+            }
+        }
+    }
+    /**
+     Use this to return a collection of **CompicFile**s only if it contains the request.
+     
+     - Returns: A CompicFile collection if a CompicFile has been found wich contains the request. Returns nil if no match is found.
+                Returns all local CompicFiles if no requests are given.
+     */
+    public func getLocalCompicFiles(requests: [CompicRequest]?) throws -> [CompicFile]? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
         
         decoder.dateDecodingStrategy = .nvmDateStrategySince1970
@@ -319,10 +405,13 @@ public struct NVMCompic {
                 if fileManager.fileExists(atPath: compicPath.path) {
                     let compicData = try Data(contentsOf: compicURL)
                     var compicFile = try decoder.decode(CompicFile.self, from: compicData)
-                    compicFile.usedAt = Date()
-                    try compicFile.save()
                     
-                    compicFiles.append(compicFile)
+                    if compicFile.allRequests().contains(request) {
+                        compicFile.usedAt = Date()
+                        try compicFile.save()
+                        
+                        compicFiles.append(compicFile)
+                    }
                 }
             }
             
