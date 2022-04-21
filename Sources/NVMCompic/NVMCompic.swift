@@ -295,8 +295,8 @@ public struct NVMCompic {
             let compicFileData = try Data(contentsOf: compicFileURL)
             var compicFile = try decoder.decode(CompicFile.self, from: compicFileData)
             
-            compicFile.usedAt = Date()
-            try compicFile.save()
+            //compicFile.usedAt = Date()
+            //try compicFile.save()
             
             return compicFile
         } else {
