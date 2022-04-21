@@ -291,12 +291,16 @@ public struct NVMCompic {
         
         let compicFileURL = compicPath.appendingPathComponent(strippedUrl.toFileName)
         
+        print(1)
         if fileManager.fileExists(atPath: compicFileURL.path) {
+            print(2)
             let compicFileData = try Data(contentsOf: compicFileURL)
+            print(3)
             var compicFile = try decoder.decode(CompicFile.self, from: compicFileData)
             
-            //compicFile.usedAt = Date()
-            //try compicFile.save()
+            print(4)
+            compicFile.usedAt = Date()
+            try compicFile.save()
             
             return compicFile
         } else {
