@@ -248,6 +248,8 @@ extension CompicFile: Decodable {
         iconImages = (try? values.decode([CompicImage].self, forKey: .iconImages)) ?? []
         backgroundImages = (try? values.decode([CompicImage].self, forKey: .backgroundImages)) ?? []
         
+        print("tintColorString: \(String(describing: try? values.decode(String.self, forKey: .tintColor)))")
+        print("tintColorColor: \(String(describing: Color(hex: try? values.decode(String.self, forKey: .tintColor))))")
         tintColor = Color(hex: try? values.decode(String.self, forKey: .tintColor))
         textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
         backgroundColor = Color(hex: try? values.decode(String.self, forKey: .backgroundColor))
