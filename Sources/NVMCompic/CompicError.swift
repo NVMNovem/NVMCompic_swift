@@ -11,6 +11,7 @@ enum NVMCompicError: Error {
     case serviceUnavailable
     case notInitialized
     case invalidObject
+    case invalidUrl
 }
 
 extension NVMCompicError: LocalizedError {
@@ -22,6 +23,8 @@ extension NVMCompicError: LocalizedError {
             return 1001001
         case .invalidObject:
             return 1001002
+        case .invalidUrl:
+            return 1001003
         }
     }
     
@@ -40,6 +43,11 @@ extension NVMCompicError: LocalizedError {
         case .invalidObject:
             return NSLocalizedString(
                 "Object is invalid.",
+                comment: ""
+            )
+        case .invalidUrl:
+            return NSLocalizedString(
+                "Url is invalid.",
                 comment: ""
             )
         }

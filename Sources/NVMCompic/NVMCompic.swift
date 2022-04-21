@@ -285,7 +285,7 @@ public struct NVMCompic {
      */
     public func getLocalCompicFile(url: String) throws -> CompicFile? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
-        guard let strippedUrl = url.strippedUrl(keepPrefix: false, keepSuffix: true) else { return nil }
+        guard let strippedUrl = url.strippedUrl(keepPrefix: false, keepSuffix: true) else { throw NVMCompicError.invalidUrl }
         
         decoder.dateDecodingStrategy = .nvmDateStrategySince1970
         
