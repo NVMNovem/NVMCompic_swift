@@ -278,7 +278,7 @@ extension Compic: Decodable {
         backgroundImage = try? values.decode(Data.self, forKey: .backgroundImage)
         
         
-        tintColor = Color(hex: "AA0A58")
+        tintColor = Color(hex: try? values.decode(String.self, forKey: .tintColor))
         textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
         backgroundColor = Color(hex: try? values.decode(String.self, forKey: .backgroundColor))
         buttonColor = Color(hex: try? values.decode(String.self, forKey: .buttonColor))
