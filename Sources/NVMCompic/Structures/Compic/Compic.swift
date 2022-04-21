@@ -257,6 +257,8 @@ extension Compic: Decodable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         
+        tintColor = Color(hex: "CC0A58")
+        
         objectId = try values.decode(String.self, forKey: .objectId)
         updatedAt = try values.decode(Date.self, forKey: .updatedAt)
         
@@ -277,7 +279,6 @@ extension Compic: Decodable {
         iconImage = try? values.decode(Data.self, forKey: .iconImage)
         backgroundImage = try? values.decode(Data.self, forKey: .backgroundImage)
         
-        tintColor = Color(hex: try? values.decode(String.self, forKey: .tintColor))
         textColor = Color(hex: try? values.decode(String.self, forKey: .textColor))
         backgroundColor = Color(hex: try? values.decode(String.self, forKey: .backgroundColor))
         buttonColor = Color(hex: try? values.decode(String.self, forKey: .buttonColor))
