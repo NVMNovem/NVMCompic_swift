@@ -287,15 +287,13 @@ public struct NVMCompic {
      */
     public mutating func getLocalCompicFile(url: String) throws -> CompicFile? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
-        print("getLocalCompicFile(url:)")
         guard let strippedUrl = url.strippedUrl(keepPrefix: false, keepSuffix: true) else { throw NVMCompicError.invalidUrl }
         print("getLocalCompicFile(url:) - strippedUrl: \(strippedUrl)")
         
         if let siCompicFiles = self.compicFiles[strippedUrl] {
-            print("siCompicFiles: \(siCompicFiles)")
             for siCompicFile in siCompicFiles {
                 if secondsBetweenDates(siCompicFile.value, Date()) <= 1 {
-                    print("siCompicFile.key: \(siCompicFile.key)")
+                    print("return SharedInstance CompicFile")
                     return siCompicFile.key
                 }
             }
@@ -313,7 +311,7 @@ public struct NVMCompic {
             try compicFile.save(compicPath: compicPath)
             
             self.compicFiles[strippedUrl] = [compicFile : Date()]
-            print("self.compicFiles: \(self.compicFiles)")
+            print("return new CompicFile")
             
             return compicFile
         } else {
