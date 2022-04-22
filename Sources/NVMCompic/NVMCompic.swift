@@ -292,6 +292,7 @@ public struct NVMCompic {
         if let siCompicFiles = self.compicFiles[strippedUrl] {
             for siCompicFile in siCompicFiles {
                 if secondsBetweenDates(siCompicFile.value, Date()) <= 1 {
+                    print(siCompicFile.key)
                     return siCompicFile.key
                 }
             }
