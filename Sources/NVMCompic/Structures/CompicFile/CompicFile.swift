@@ -119,7 +119,7 @@ public struct CompicFile: Hashable {
         return compicRequests
     }
     
-    internal func save() throws {
+    internal mutating func save() throws {
         let compicPath = try NVMCompic.sharedInstance.getCompicPath()
         let compicFileURL = compicPath.appendingPathComponent(url.toFileName)
         
