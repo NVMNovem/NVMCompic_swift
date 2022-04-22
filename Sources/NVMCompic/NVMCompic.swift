@@ -287,7 +287,9 @@ public struct NVMCompic {
      */
     public mutating func getLocalCompicFile(url: String) throws -> CompicFile? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
+        print("getLocalCompicFile(url:)")
         guard let strippedUrl = url.strippedUrl(keepPrefix: false, keepSuffix: true) else { throw NVMCompicError.invalidUrl }
+        print("getLocalCompicFile(url:) - strippedUrl: \(strippedUrl)")
         
         if let siCompicFiles = self.compicFiles[strippedUrl] {
             print("siCompicFiles: \(siCompicFiles)")
