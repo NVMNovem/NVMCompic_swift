@@ -290,9 +290,10 @@ public struct NVMCompic {
         guard let strippedUrl = url.strippedUrl(keepPrefix: false, keepSuffix: true) else { throw NVMCompicError.invalidUrl }
         
         if let siCompicFiles = self.compicFiles[strippedUrl] {
+            print("siCompicFiles: \(siCompicFiles)")
             for siCompicFile in siCompicFiles {
                 if secondsBetweenDates(siCompicFile.value, Date()) <= 1 {
-                    print(siCompicFile.key)
+                    print("siCompicFile.key: \(siCompicFile.key)")
                     return siCompicFile.key
                 }
             }
@@ -310,6 +311,7 @@ public struct NVMCompic {
             try compicFile.save()
             
             self.compicFiles[strippedUrl] = [compicFile : Date()]
+            print("self.compicFiles: \(self.compicFiles)")
             
             return compicFile
         } else {
