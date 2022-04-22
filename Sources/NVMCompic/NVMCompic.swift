@@ -9,8 +9,6 @@ public struct NVMCompic {
     private let fileManager = FileManager.default
     
     private var compicPath: URL?
-    
-    private var compicFiles: [String : [CompicFile : Date]] = [:]
 
     mutating public func initialize(_ settings: CompicSettings) {
         self.compicPath = settings.compicPath
@@ -288,16 +286,6 @@ public struct NVMCompic {
     public mutating func getLocalCompicFile(url: String) throws -> CompicFile? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
         guard let strippedUrl = url.strippedUrl(keepPrefix: false, keepSuffix: true) else { throw NVMCompicError.invalidUrl }
-        print("getLocalCompicFile(url:) - strippedUrl: \(strippedUrl)")
-        
-        if let siCompicFiles = self.compicFiles[strippedUrl] {
-            for siCompicFile in siCompicFiles {
-                if secondsBetweenDates(siCompicFile.value, Date()) <= 1 {
-                    print("return SharedInstance CompicFile")
-                    return siCompicFile.key
-                }
-            }
-        }
         
         decoder.dateDecodingStrategy = .nvmDateStrategySince1970
         
@@ -309,9 +297,6 @@ public struct NVMCompic {
             
             compicFile.usedAt = Date()
             try compicFile.save(compicPath: compicPath)
-            
-            self.compicFiles[strippedUrl] = [compicFile : Date()]
-            print("return new CompicFile")
             
             return compicFile
         } else {
