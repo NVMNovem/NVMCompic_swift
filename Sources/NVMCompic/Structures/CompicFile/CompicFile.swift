@@ -119,15 +119,25 @@ public struct CompicFile: Hashable {
         return compicRequests
     }
     
-    internal mutating func save() throws {
-        let compicPath = try NVMCompic.sharedInstance.getCompicPath()
-        let compicFileURL = compicPath.appendingPathComponent(url.toFileName)
-        
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .nvmDateStrategySince1970
-        
-        let compicFileData = try encoder.encode(self)
-        try compicFileData.write(to: compicFileURL)
+    internal func save(compicPath: URL? = nil) throws {
+        if let compicPath = compicPath {
+            let compicFileURL = compicPath.appendingPathComponent(url.toFileName)
+            
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .nvmDateStrategySince1970
+            
+            let compicFileData = try encoder.encode(self)
+            try compicFileData.write(to: compicFileURL)
+        } else {
+            let compicPath = try NVMCompic.sharedInstance.getCompicPath()
+            let compicFileURL = compicPath.appendingPathComponent(url.toFileName)
+            
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .nvmDateStrategySince1970
+            
+            let compicFileData = try encoder.encode(self)
+            try compicFileData.write(to: compicFileURL)
+        }
     }
     
     public mutating func saveCompic(_ compic: Compic) throws {

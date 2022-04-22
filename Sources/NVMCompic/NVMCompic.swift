@@ -310,7 +310,7 @@ public struct NVMCompic {
             var compicFile = try decoder.decode(CompicFile.self, from: compicFileData)
             
             compicFile.usedAt = Date()
-            try compicFile.save()
+            try compicFile.save(compicPath: compicPath)
             
             self.compicFiles[strippedUrl] = [compicFile : Date()]
             print("self.compicFiles: \(self.compicFiles)")
