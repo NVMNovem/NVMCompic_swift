@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import NVMColor
 
-public struct CompicFile {
+public struct CompicFile: Hashable {
     public var objectId: String
     public var updatedAt: Date
     
@@ -41,6 +41,13 @@ public struct CompicFile {
      - warning: U need a secret key to access this variable.
      */
     public var nvmData: Data?
+    
+    public static func == (lhs: CompicFile, rhs: CompicFile) -> Bool {
+        return lhs.objectId == rhs.objectId
+    }
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(objectId)
+    }
     
     enum CodingKeys: String, CodingKey {
         case objectId

@@ -291,12 +291,15 @@ internal extension String {
 }
 
 internal func daysBetweenDates(_ oldDate: Date, _ newDate: Date) -> Int {
-    let diffComponents = Calendar.current.dateComponents([.day], from: oldDate, to: newDate)
-    if let days = diffComponents.day {
-        return days
-    } else {
-        return 0
-    }
+    return Calendar.current.dateComponents([.day], from: oldDate, to: newDate).day ?? 0
+}
+
+internal func minutesBetweenDates(_ oldDate: Date, _ newDate: Date) -> Int {
+    return Calendar.current.dateComponents([.minute], from: oldDate, to: newDate).minute ?? 0
+}
+
+internal func secondsBetweenDates(_ oldDate: Date, _ newDate: Date) -> Int {
+    return Calendar.current.dateComponents([.second], from: oldDate, to: newDate).second ?? 0
 }
 
 extension String {
