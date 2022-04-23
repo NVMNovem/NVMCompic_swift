@@ -283,7 +283,7 @@ public struct NVMCompic {
      
      - Returns: A CompicFile if a CompicFile has been found wich mathes the url.
      */
-    public mutating func getLocalCompicFile(url: String) throws -> CompicFile? {
+    public func getLocalCompicFile(url: String) throws -> CompicFile? {
         guard let compicPath = compicPath else { throw NVMCompicError.notInitialized }
         guard let strippedUrl = url.strippedUrl(keepPrefix: false, keepSuffix: true) else { throw NVMCompicError.invalidUrl }
         
