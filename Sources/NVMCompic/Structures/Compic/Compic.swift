@@ -42,7 +42,7 @@ public struct Compic {
      
      - warning: U need a secret key to access this variable.
      */
-    public var nvmData: Data?
+    public var nvmResult: Data?
     
     enum CodingKeys: String, CodingKey {
         case objectId
@@ -72,7 +72,7 @@ public struct Compic {
         case borderColor
         case headerColor
         
-        case nvmData
+        case nvmResult
     }
     
     internal init(objectId: String,
@@ -102,7 +102,7 @@ public struct Compic {
                   borderColor: Color?,
                   headerColor: Color?,
     
-                  nvmData: Data?) {
+                  nvmResult: Data?) {
         
         self.objectId = objectId
         self.updatedAt = updatedAt
@@ -131,7 +131,7 @@ public struct Compic {
         self.borderColor = borderColor
         self.headerColor = headerColor
         
-        self.nvmData = nvmData
+        self.nvmResult = nvmResult
     }
     
     internal init?(compicFile: CompicFile?, compicRequest: CompicRequest?) {
@@ -191,7 +191,7 @@ public struct Compic {
         self.borderColor = compicFile.borderColor
         self.headerColor = compicFile.headerColor
         
-        self.nvmData = compicFile.nvmData
+        self.nvmResult = compicFile.nvmResult
     }
     
     internal func getCompicFile() throws -> CompicFile {
@@ -250,7 +250,7 @@ extension Compic: Encodable {
         try? container.encode(borderColor?.hex, forKey: .borderColor)
         try? container.encode(headerColor?.hex, forKey: .headerColor)
         
-        try? container.encode(nvmData, forKey: .nvmData)
+        try? container.encode(nvmResult, forKey: .nvmResult)
     }
 }
 extension Compic: Decodable {
@@ -286,12 +286,12 @@ extension Compic: Decodable {
         borderColor = Color(hex: try? values.decode(String.self, forKey: .borderColor))
         headerColor = Color(hex: try? values.decode(String.self, forKey: .headerColor))
         
-        nvmData = try? values.decode(Data.self, forKey: .nvmData)
+        nvmResult = try? values.decode(Data.self, forKey: .nvmResult)
     }
 }
 
 extension Compic: CustomStringConvertible {
     public var description: String {
-        return "\r  [\(self.objectId)]\r  \r  \(self.name)\r  Url: \(self.url)\r  Website: \(self.website)\r  Countries: \(self.countries)\r  Icon Image: \(String(describing: self.iconImage))\r  Background Image: \(String(describing: self.backgroundImage))\r\r  CompicRequest: \(String(describing: self.compicRequest))\r\r  NVMData: \(String(describing: self.nvmData))\r\r  Updated At: \(String(describing: self.updatedAt))\r"
+        return "\r  [\(self.objectId)]\r  \r  \(self.name)\r  Url: \(self.url)\r  Website: \(self.website)\r  Countries: \(self.countries)\r  Icon Image: \(String(describing: self.iconImage))\r  Background Image: \(String(describing: self.backgroundImage))\r\r  CompicRequest: \(String(describing: self.compicRequest))\r\r  nvmResult: \(String(describing: self.nvmResult))\r\r  Updated At: \(String(describing: self.updatedAt))\r"
     }
 }

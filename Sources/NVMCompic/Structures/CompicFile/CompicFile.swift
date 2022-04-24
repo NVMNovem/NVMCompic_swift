@@ -40,7 +40,7 @@ public struct CompicFile: Hashable {
      
      - warning: U need a secret key to access this variable.
      */
-    public var nvmData: Data?
+    public var nvmResult: Data?
     
     public static func == (lhs: CompicFile, rhs: CompicFile) -> Bool {
         return lhs.objectId == rhs.objectId
@@ -75,7 +75,7 @@ public struct CompicFile: Hashable {
         case borderColor
         case headerColor
         
-        case nvmData
+        case nvmResult
     }
     
     public init(compic: Compic) {
@@ -241,7 +241,7 @@ extension CompicFile: Encodable {
         try? container.encode(borderColor?.hex, forKey: .borderColor)
         try? container.encode(headerColor?.hex, forKey: .headerColor)
         
-        try? container.encode(nvmData, forKey: .nvmData)
+        try? container.encode(nvmResult, forKey: .nvmResult)
     }
 }
 extension CompicFile: Decodable {
@@ -273,7 +273,7 @@ extension CompicFile: Decodable {
         borderColor = Color(hex: try? values.decode(String.self, forKey: .borderColor))
         headerColor = Color(hex: try? values.decode(String.self, forKey: .headerColor))
         
-        nvmData = try? values.decode(Data.self, forKey: .nvmData)
+        nvmResult = try? values.decode(Data.self, forKey: .nvmResult)
     }
 }
 
